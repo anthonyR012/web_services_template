@@ -1,5 +1,6 @@
 <?PHP
 include_once('conexion.php');
+include_once('class/FilterSearchClass.php');
 header('Access-Control-Allow-Origin: *');
 
 //CAPTURA PARAMETRO DE GET 
@@ -8,12 +9,22 @@ $json=array();
 //INSTANCIACION DE MI CONEXION A BBDD
 $objConectar = new Conectar();
 $conDb = $objConectar->getConnection();
+$implement = new FilterSearchClass();
+//RECIBIR JSON
+$entityBody = json_decode(file_get_contents('php://input'), true);
 
 switch ($case) {
     	case "productos":	
-			
-			$sql="SELECT p.*,c.Nombre_Categoria FROM productos p
-			JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria";
+            //FILTRO POR TODOS LOS VALORES
+            
+
+            $sql=$implement->verifiedParamProduct( 
+            !empty($_GET["searchName"])?$_GET["searchName"]:null,
+            !empty($_GET["searchPMenor"])?$_GET["searchPMenor"]:null,
+            !empty($_GET["searchPMayor"])?$_GET["searchPMayor"]:null,
+            !empty($_GET["searchCategory"])?$_GET["searchCategory"]:null,
+            !empty($_GET["searchBrand"])?$_GET["searchBrand"]:null);
+
 			$result = $conDb->prepare($sql);
 			$rpta = $result->execute();
 			
@@ -40,9 +51,15 @@ switch ($case) {
      		break;
 
 		case "usuarios":
-			$sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
-			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento";
+
+            $sql=$implement->verifiedParamUsers( 
+                !empty($_GET["searchName"])?$_GET["searchName"]:null,
+                !empty($_GET["searchApellido"])?$_GET["searchApellido"]:null,
+                !empty($_GET["searchCity"])?$_GET["searchCity"]:null,
+                !empty($_GET["searchDepartment"])?$_GET["searchDepartment"]:null);
+
+
+			
 			$result = $conDb->prepare($sql);
 			$rpta = $result->execute();
 
@@ -66,7 +83,37 @@ switch ($case) {
 				
 			}
 			break;
+		case "login":
+			
+  			$sql=$implement->verifiedParamLogin( 
+                !empty($_POST["searchEmail"])?$_POST["searchEmail"]:null,
+                !empty($_POST["searchPass"])?$_POST["searchPass"]:null);
+			if ($sql!==null){
+				$result = $conDb->prepare($sql);
+				$rpta = $result->execute();
+			
+			
 
+			while($row =$result ->fetch(PDO::FETCH_ASSOC)){
+			
+				$item =array(
+					"id" => $row["Id_Usuario"],
+					"Nombre"=> $row["Nombre_Usuario"],
+					"Apellido" => $row["Apellidos_Usuario"],
+					"Email" => $row["Email_Usuario"],
+					"Telefono" => $row["Telefono_Usuario"],
+					"Ciudad" =>$row["Nombre_Municipio"],
+					"Departamento" =>$row["Nombre_Departamento"],
+					"Direccion" => $row["Direccion_Usuario"],
+					"Contrasena" => $row["Password_Usuario"]
+					
+				);
+				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+				$json['usuarios'][]=$item;
+				//IMPRIMIMOS OBJETO JSON
+			}
+		}
+			break;
 		case "proveedores":
 
 			//EJECUTA DOS CONSULTAS, UNA: PROVEEDORES, DOS: PRODUCTOS DE PROVEEDORES
