@@ -1,11 +1,14 @@
 <?PHP
 include_once('conexion.php');
 include_once('class/FilterSearchClass.php');
+// CORS es un acrónimo que refiere a las reglas de seguridad que garantizan la comunicación entre dos puntos con una precedencia diferente al dominio desde el cual se llama (es decir: diferentes dominios).
+
+// En general, dichas reglas son implementadas por el cliente web y es éste quien se encarga de validar la entrega de la información o rechazarla con base a lo que el servidor responda.
 header('Access-Control-Allow-Origin: *');
 
 //CAPTURA PARAMETRO DE GET 
-$case=$_GET["case"];
-$json=array();
+$case = $_GET["case"];
+$json = array();
 //INSTANCIACION DE MI CONEXION A BBDD
 $objConectar = new Conectar();
 $conDb = $objConectar->getConnection();
@@ -14,132 +17,214 @@ $implement = new FilterSearchClass();
 $entityBody = json_decode(file_get_contents('php://input'), true);
 
 switch ($case) {
-    	case "productos":	
-            //FILTRO POR TODOS LOS VALORES
-            
-
-            $sql=$implement->verifiedParamProduct( 
-            !empty($_GET["searchName"])?$_GET["searchName"]:null,
-            !empty($_GET["searchPMenor"])?$_GET["searchPMenor"]:null,
-            !empty($_GET["searchPMayor"])?$_GET["searchPMayor"]:null,
-            !empty($_GET["searchCategory"])?$_GET["searchCategory"]:null,
-            !empty($_GET["searchBrand"])?$_GET["searchBrand"]:null);
-
-			$result = $conDb->prepare($sql);
-			$rpta = $result->execute();
-			
-	        	
-				while($row = $result->fetch(PDO::FETCH_ASSOC)){
-			
-						$item=array(
-						"id" => $row["Id_Producto"],
-						"Nombre"=> $row["Nombre_Producto"],
-						"Marca" => $row["Marca_Producto"],
-						"Referencia" => $row["Ref_Producto"],
-						"Descripcion" => $row["Descripcion_Producto"],
-						"Precio" => $row["Precio_Producto"],
-						"Existencias" => $row["Existencia_Producto"],
-						"Imagen" => $row["Imagen_Producto"],
-						"Garantia" => $row["Garantia_Producto"],
-						"Categoria"=>$row["Nombre_Categoria"],
-						);
-						$json['productos'][]=$item;
-				}
-
-			
-
-     		break;
-
-		case "usuarios":
-
-            $sql=$implement->verifiedParamUsers( 
-                !empty($_GET["searchName"])?$_GET["searchName"]:null,
-                !empty($_GET["searchApellido"])?$_GET["searchApellido"]:null,
-                !empty($_GET["searchCity"])?$_GET["searchCity"]:null,
-                !empty($_GET["searchDepartment"])?$_GET["searchDepartment"]:null);
+	case "productos":
+		//FILTRO POR TODOS LOS VALORES
 
 
-			
-			$result = $conDb->prepare($sql);
-			$rpta = $result->execute();
+		$sql = $implement->verifiedParamProduct(
+			!empty($_GET["searchName"]) ? $_GET["searchName"] : null,
+			!empty($_GET["searchPMenor"]) ? $_GET["searchPMenor"] : null,
+			!empty($_GET["searchPMayor"]) ? $_GET["searchPMayor"] : null,
+			!empty($_GET["searchCategory"]) ? $_GET["searchCategory"] : null,
+			!empty($_GET["searchBrand"]) ? $_GET["searchBrand"] : null
+		);
 
-			while($row =$result ->fetch(PDO::FETCH_ASSOC)){
-			
-				$item =array(
-					"id" => $row["Id_Usuario"],
-					"Nombre"=> $row["Nombre_Usuario"],
-					"Apellido" => $row["Apellidos_Usuario"],
-					"Email" => $row["Email_Usuario"],
-					"Telefono" => $row["Telefono_Usuario"],
-					"Ciudad" =>$row["Nombre_Municipio"],
-					"Departamento" =>$row["Nombre_Departamento"],
-					"Direccion" => $row["Direccion_Usuario"],
-					"Contrasena" => $row["Password_Usuario"]
-					
+		
+		if(!empty($sql)){
+
+		$result = $conDb->prepare($sql);
+		$rpta = $result->execute();
+
+			if($result->rowCount()>0){
+
+				while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+
+				$item = array(
+				"id" => $row["Id_Producto"],
+				"Nombre" => $row["Nombre_Producto"],
+				"Marca" => $row["Marca_Producto"],
+				"Referencia" => $row["Ref_Producto"],
+				"Descripcion" => $row["Descripcion_Producto"],
+				"Precio" => $row["Precio_Producto"],
+				"Existencias" => $row["Existencia_Producto"],
+				"Imagen" => $row["Imagen_Producto"],
+				"Garantia" => $row["Garantia_Producto"],
+				"Categoria" => $row["Nombre_Categoria"],
 				);
-				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-				$json['usuarios'][]=$item;
-				//IMPRIMIMOS OBJETO JSON
-				
+				$json['productos'][] = $item;
 			}
-			break;
-		case "login":
-			
-  			$sql=$implement->verifiedParamLogin( 
-                !empty($_POST["searchEmail"])?$_POST["searchEmail"]:null,
-                !empty($_POST["searchPass"])?$_POST["searchPass"]:null);
-			if ($sql!==null){
-				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
-			
-			
 
-			while($row =$result ->fetch(PDO::FETCH_ASSOC)){
-			
-				$item =array(
-					"id" => $row["Id_Usuario"],
-					"Nombre"=> $row["Nombre_Usuario"],
-					"Apellido" => $row["Apellidos_Usuario"],
-					"Email" => $row["Email_Usuario"],
-					"Telefono" => $row["Telefono_Usuario"],
-					"Ciudad" =>$row["Nombre_Municipio"],
-					"Departamento" =>$row["Nombre_Departamento"],
-					"Direccion" => $row["Direccion_Usuario"],
-					"Contrasena" => $row["Password_Usuario"]
-					
-				);
-				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-				$json['usuarios'][]=$item;
-				//IMPRIMIMOS OBJETO JSON
+			}else{
+				$item = array("response" => "No found product");
+				$json['productos'][] = $item;
 			}
 		}
-			break;
-		case "proveedores":
 
-			//EJECUTA DOS CONSULTAS, UNA: PROVEEDORES, DOS: PRODUCTOS DE PROVEEDORES
-			$sql1="SELECT u.Id_Usuario,u.Nombre_Usuario,u.Apellidos_Usuario,u.Email_Usuario,u.Telefono_Usuario,u.Direccion_Usuario, 
-			l.Nombre_Municipio,d.Nombre_Departamento
-			FROM productos_proveedores pr
-			JOIN usuarios u ON u.Id_Usuario = pr.Id_Proveedor
-			JOIN localidad l ON u.Id_Usuario = l.Id_Municipio
-			JOIN departamentos d ON d.Id_Departamento = l.Id_Departamento 
-			GROUP BY u.Nombre_Usuario
-            ORDER BY u.Id_Usuario";
 
-			$sql2 = "SELECT u.Id_Usuario,p.Nombre_Producto,p.Marca_Producto,p.Descripcion_Producto,
-			p.Imagen_Producto,p.Garantia_Producto,p.Existencia_Producto,p.Id_Producto
-						,p.Precio_Producto FROM productos_proveedores pr
-						JOIN usuarios u ON u.Id_Usuario = pr.Id_Proveedor
-						JOIN productos p ON p.Id_Producto = pr.Id_Producto
-						JOIN localidad l ON u.Id_Usuario = l.Id_Municipio
-						JOIN departamentos d ON d.Id_Departamento = l.Id_Departamento 
-						ORDER BY u.Id_Usuario";
+		break;
 
-			$result = $conDb->prepare($sql1);
-			$result2 = $conDb->prepare($sql2);
+	case "usuarios":
+
+		$sql = $implement->verifiedParamUsers(
+			!empty($_GET["searchName"]) ? $_GET["searchName"] : null,
+			!empty($_GET["searchApellido"]) ? $_GET["searchApellido"] : null,
+			!empty($_GET["searchCity"]) ? $_GET["searchCity"] : null,
+			!empty($_GET["searchDepartment"]) ? $_GET["searchDepartment"] : null
+		);
+
+		// VERIFICA QUE CONSULTA RETORNE ALGO
+		if(!empty($sql)){
+
+		
+		$result = $conDb->prepare($sql);
+		$rpta = $result->execute();
+		//SI Y SOLO SI RESPUESTA TIENE DATOS PARA MOSTRAR
+		if($result->rowCount()>0){
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+
+			$item = array(
+				"id" => $row["Id_Usuario"],
+				"Nombre" => $row["Nombre_Usuario"],
+				"Apellido" => $row["Apellidos_Usuario"],
+				"Email" => $row["Email_Usuario"],
+				"Telefono" => $row["Telefono_Usuario"],
+				"Ciudad" => $row["Nombre_Municipio"],
+				"Departamento" => $row["Nombre_Departamento"],
+				"Direccion" => $row["Direccion_Usuario"],
+				"Contrasena" => $row["Password_Usuario"]
+
+			);
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+			$json['usuarios'][] = $item;
+			//IMPRIMIMOS OBJETO JSON
+
+		}
+		}else{
+			$item = array("response" => "No found user");
+			$json['productos'][] = $item;
+		}
+	}
+		break;
+	case "login":
+
+
+		$sql = $implement->verifiedParamLogin(
+			!empty($_POST["searchEmail"]) ? $_POST["searchEmail"] : null,
+			!empty($_POST["searchPass"]) ? $_POST["searchPass"] : null
+		);
+		if (!empty($sql)) {
+			$result = $conDb->prepare($sql);
 			$rpta = $result->execute();
-			$rpta2 = $result2->execute();
-			$countArray = array();
+
+			if($result->rowCount()>0){
+
+			$row = $result->fetch(PDO::FETCH_ASSOC);
+			$security = new SecurityPassClass($_POST["searchPass"]);
+			if ($security->verify()) {
+				$item = array(
+					"id" => $row["Id_Usuario"],
+					"Nombre" => $row["Nombre_Usuario"],
+					"Apellido" => $row["Apellidos_Usuario"],
+					"Email" => $row["Email_Usuario"],
+					"Telefono" => $row["Telefono_Usuario"],
+					"Ciudad" => $row["Nombre_Municipio"],
+					"Departamento" => $row["Nombre_Departamento"],
+					"Direccion" => $row["Direccion_Usuario"],
+					"Contrasena" => $row["Password_Usuario"]
+
+				);
+				
+
+			}else{
+				echo json_encode(array("response" => "Login failed"));
+
+			}
+		}else{
+			$item = array("response" => "No found user");
+			
+		}
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+				
+			$json['usuarios'][] = $item;
+		}
+		break;
+	case "proveedores":
+		
+		$sql1 = $implement->verifiedParamProveedors(
+			!empty($_GET["searchName"]) ? $_GET["searchName"] : null,
+			!empty($_GET["searchApellido"]) ? $_GET["searchApellido"] : null,
+			!empty($_GET["searchCity"]) ? $_GET["searchCity"] : null,
+			!empty($_GET["searchDepartment"]) ? $_GET["searchDepartment"] : null
+		);
+
+		//EJECUTA DOS CONSULTAS, UNA: PROVEEDORES, DOS: PRODUCTOS DE PROVEEDORES
+		
+		if (!empty($sql1)) {
+			$result = $conDb->prepare($sql1);
+			$rpta = $result->execute();
+
+			
+			//VERIFIQUE QUE HAYA RESPUESTA
+			if($result->rowCount() > 0){
+			
+				//SI CONSULTA ES IGUAL A CERO
+			if ($result->rowCount() == 1) {
+				
+				$row = $result->fetch(PDO::FETCH_ASSOC);
+				//GUARDAMOS EN ARRAY DATOS DE PRIMER PROVEEDOR
+				$user = $row["Id_Usuario"];
+				//EJECUTAMOS CONSULTA DE PRODUCTOS POR UNICO PROVEEDOR
+				$sql2 = "SELECT u.Id_Usuario,p.Nombre_Producto,p.Marca_Producto,p.Descripcion_Producto,
+				p.Imagen_Producto,p.Garantia_Producto,p.Existencia_Producto,p.Id_Producto
+							,p.Precio_Producto FROM productos_proveedores pr
+							JOIN usuarios u ON u.Id_Usuario = pr.Id_Proveedor
+							JOIN productos p ON p.Id_Producto = pr.Id_Producto
+							JOIN localidad l ON u.Id_Usuario = l.Id_Municipio
+							JOIN departamentos d ON d.Id_Departamento = l.Id_Departamento 
+							WHERE u.Id_Usuario = $user";
+							
+				$result2 = $conDb->prepare($sql2);
+				$rpta2 = $result2->execute();
+				
+				$item = array(
+
+					"id" => $row["Id_Usuario"],
+					"Nombre" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
+					"Email" => $row["Email_Usuario"],
+					"Telefono" => $row["Telefono_Usuario"],
+					"Direccion" => $row["Direccion_Usuario"],
+					"Ciudad" => $row["Nombre_Municipio"],
+					"Departamento" => $row["Nombre_Departamento"],
+
+				);
+			
+
+				while ($rowProduct = $result2->fetch(PDO::FETCH_ASSOC)) {
+
+				$itemDetail = array(
+					"id_usuario_productos" => $rowProduct["Id_Usuario"],
+					"id_producto" => $rowProduct["Id_Producto"],
+					"nombre_producto" => $rowProduct["Nombre_Producto"],
+					"marca_producto" => $rowProduct["Marca_Producto"],
+					"descripcion_producto" => $rowProduct["Descripcion_Producto"],
+					"imagen_producto" => $rowProduct["Imagen_Producto"],
+					"garantia_producto" => $rowProduct["Garantia_Producto"],
+					"existencia_producto" => $rowProduct["Existencia_Producto"],
+				);
+				$item["productos"][] = $itemDetail;
+				//GUARDAMOS EN JSON LOS DATOS COMPLETOS DE PROVEEDOR CON SUS PRODUCTOS
+				}
+				$json['proveedores'][] = $item;
+				//SI CONSULTA ES MAYOR A UN REGISTRO
+			}else{
+
+				//TRAEMOS CONSULTA CON LAS CLAUSURAS CORRESPONDIENTE
+				$sql2 = $implement->verifiedParamProductProveedors();
+							
+				$result2 = $conDb->prepare($sql2);
+				$rpta2 = $result2->execute();
+				$countArray = array();
+				
 			//GUARDAMOS EN ARRAY SEGUNDA CONSULTA (CONSULTA PRODUCTOS)
 			while($row = $result2 ->fetch(PDO::FETCH_ASSOC)){
 				
@@ -200,42 +285,63 @@ switch ($case) {
 					$json['proveedores'][] = $item;	
 					
 				}
-	
-				
-			
-			
-			
+			}
+			//SI CONSULTA NO TIENE REGISTROS
+		}else{
+			$item = array("response" => "No found provider");
+			$json['proveedores'][] = $item;	
+		}
+
+
+		}
+
+
+
 		break;
 
-		
 
-		case "pqrs":
-			$sql="SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+
+	case "pqrs":
+
+		$sql = $implement->verifiedParamProveedors(
+			!empty($_GET["searchName"]) ? $_GET["searchName"] : null,
+			!empty($_GET["searchApellido"]) ? $_GET["searchApellido"] : null,
+			!empty($_GET["searchCity"]) ? $_GET["searchCity"] : null,
+			!empty($_GET["searchDepartment"]) ? $_GET["searchDepartment"] : null
+		);
+
+		$sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
 			p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado 
 			FROM usuarios u 
 			JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-			JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS";
+			JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS
+            WHERE ep.Tipo_Estado = 'Activo'
+            AND ep.Razon_Estado = 'peticion'
+            AND p.Id_Usuario = 1
+            AND u.Nombre_Usuario LIKE 'a%'
+            AND u.Apellidos_Usuario LIKE 'r%'";
+			
 
-			$result = $conDb->prepare($sql);
-			$rpta = $result->execute();
+		$result = $conDb->prepare($sql);
+		$rpta = $result->execute();
 
-			while($row =$result ->fetch(PDO::FETCH_ASSOC)){
-				$item =array(
-					"id" => $row["Id_PQRS"],
-					"usuario"=> $row["Nombre_Usuario"]. " ".$row["Apellidos_Usuario"],
-					"detalle" => $row["Detalles_PQRS"],
-					"razon" => $row["Razon_Estado"],
-					"estado" =>$row["Tipo_Estado"]
-					
-				);
-				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-				$json['pqrs'][]=$item;
-				//IMPRIMIMOS OBJETO JSON
-			}
-			break;
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$item = array(
+				"id" => $row["Id_PQRS"],
+				"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
+				"detalle" => $row["Detalles_PQRS"],
+				"razon" => $row["Razon_Estado"],
+				"estado" => $row["Tipo_Estado"]
 
-			case "productosOfertas":
-				$sql="SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+			);
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+			$json['pqrs'][] = $item;
+			//IMPRIMIMOS OBJETO JSON
+		}
+		break;
+
+	case "productosOfertas":
+		$sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
 				po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
 				p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
 				p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
@@ -243,54 +349,36 @@ switch ($case) {
 				FROM productos p
 				JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
 				JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta";
-	
-				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
-	
-				while($row =$result ->fetch(PDO::FETCH_ASSOC)){
-					$item =array(
-						"id" => $row["Id_Produc_Ofert"],
-						"porcentaje_oferta"=> $row["Porcen_Oferta"],
-						"referencia"=> $row["Ref_Producto"],
-						"marca"=> $row["Marca_Producto"],
-						"garantia"=> $row["Garantia_Product_Ofert"],
-						"precio_oferta"=> $row["Precio_Produc_Ofert"],
-						"precio_original" => $row["Nombre_Producto"],
-						"nombre" => $row["Precio_Producto"],
-						"descripcion_producto" => $row["Descripcion_Producto"],
-						"tipo" => $row["Tipo_de_Oferta"],
-						"fecha_inicio" =>$row["Fecha_Inicio"],
-						"fecha_fin" =>$row["Fecha_Fin"],
-						"imagen" =>$row["Imagen_Producto"],
-						"caracteristicas_oferta" =>$row["Caracteristicas_oferta"]
-						
-					);
-					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['productosOfertas'][]=$item;
-					//IMPRIMIMOS OBJETO JSON
-				}
-				break;
-			case "categorias":
-				$sql="SELECT * FROM categorias_productos";
-	
-				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
-	
-				while($row =$result ->fetch(PDO::FETCH_ASSOC)){
-				
-						$item =array(
-							"id" => $row["Id_Categoria"],
-							"Nombre"=> $row["Nombre_Categoria"],
-									   
-						);
-					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['productosOfertas'][]=$item;
-					//IMPRIMIMOS OBJETO JSON
-					}
-				break;
 
-			case "pedidos":
-				$sql1="SELECT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+		$result = $conDb->prepare($sql);
+		$rpta = $result->execute();
+
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$item = array(
+				"id" => $row["Id_Produc_Ofert"],
+				"porcentaje_oferta" => $row["Porcen_Oferta"],
+				"referencia" => $row["Ref_Producto"],
+				"marca" => $row["Marca_Producto"],
+				"garantia" => $row["Garantia_Product_Ofert"],
+				"precio_oferta" => $row["Precio_Produc_Ofert"],
+				"precio_original" => $row["Nombre_Producto"],
+				"nombre" => $row["Precio_Producto"],
+				"descripcion_producto" => $row["Descripcion_Producto"],
+				"tipo" => $row["Tipo_de_Oferta"],
+				"fecha_inicio" => $row["Fecha_Inicio"],
+				"fecha_fin" => $row["Fecha_Fin"],
+				"imagen" => $row["Imagen_Producto"],
+				"caracteristicas_oferta" => $row["Caracteristicas_oferta"]
+
+			);
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+			$json['productosOfertas'][] = $item;
+			//IMPRIMIMOS OBJETO JSON
+		}
+		break;
+
+	case "pedidos":
+		$sql1 = "SELECT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
 				(SELECT sum(Cantidad_Producto) 
 				FROM detalle_pedidos) as cantidad_productos ,p.Valor_Total,
 				u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
@@ -300,107 +388,100 @@ switch ($case) {
 				JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
 				GROUP BY p.Id_Pedido";
 
-				$sql2 ="SELECT p.Nombre_Producto,p.Id_Producto,dp.Cantidad_Producto
+		$sql2 = "SELECT p.Nombre_Producto,p.Id_Producto,dp.Cantidad_Producto
 				,dp.Precio_Producto,pd.Id_Pedido
 				FROM productos p
 				JOIN detalle_pedidos dp ON p.Id_Producto = dp.Id_Producto
 				JOIN pedidos pd ON pd.Id_Pedido = dp.Id_Pedido";
-				$resultPedidos = $conDb->prepare($sql1);
-				$rpta = $resultPedidos->execute();
+		$resultPedidos = $conDb->prepare($sql1);
+		$rpta = $resultPedidos->execute();
 
-				$resultDetalles = $conDb->prepare($sql2);
-				$resultDetalles->execute();
+		$resultDetalles = $conDb->prepare($sql2);
+		$resultDetalles->execute();
 
-				while($row = $resultDetalles ->fetch(PDO::FETCH_ASSOC)){
-				
-					$item = array(
-							"id_pedido" => $row["Id_Pedido"],
-							"id_producto" => $row["Id_Producto"],
-							"nombre_producto" => $row["Nombre_Producto"],
-							"cantidad_producto" => $row["Cantidad_Producto"],
-							"precio_producto"=>$row["Precio_Producto"],
-						
+		while ($row = $resultDetalles->fetch(PDO::FETCH_ASSOC)) {
+
+			$item = array(
+				"id_pedido" => $row["Id_Pedido"],
+				"id_producto" => $row["Id_Producto"],
+				"nombre_producto" => $row["Nombre_Producto"],
+				"cantidad_producto" => $row["Cantidad_Producto"],
+				"precio_producto" => $row["Precio_Producto"],
+
+			);
+			$countArray[] = $item;
+		}
+
+		while ($row = $resultPedidos->fetch(PDO::FETCH_ASSOC)) {
+			$condition = $row['Id_Pedido'];
+			$item = array(
+				"id" => $condition,
+				"estado" => $row["Estado_Pedido"],
+				"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
+				"id_usuario" => $row["Id_Usuario"],
+				"fecha_pedido" => $row["Fecha_Pedido"],
+				"cantidad_productos" => $row["cantidad_productos"],
+				"total_a_pagar" => $row["Valor_Total"],
+
+			);
+			$count = 0;
+			//ITERA ARRAY DE PRODUCTOS
+			while ($count < count($countArray)) {
+				//COMPRUEBA QUE PRODUCTO PERTENECEN A ESTE PROVEEDOR, Y LOS GUARDA COMO
+				// UN ARRAY
+				if ($countArray[$count]["id_pedido"] == $condition) {
+					$itemDetail = array(
+						"id_producto" => $countArray[$count]["id_producto"],
+						"nombre_producto" => $countArray[$count]["nombre_producto"],
+						"cantidad_producto" => $countArray[$count]["cantidad_producto"],
+						"precio_producto" => $countArray[$count]["precio_producto"],
 					);
-					$countArray[] = $item;
-	
+					$item["productos"][] = $itemDetail;
 				}
-				
-				while($row =$resultPedidos ->fetch(PDO::FETCH_ASSOC)){
-						$condition = $row['Id_Pedido'];
-						$item =array(
-							"id" => $condition,
-							"estado"=> $row["Estado_Pedido"],
-							"usuario"=> $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
-							"id_usuario"=> $row["Id_Usuario"],
-							"fecha_pedido"=> $row["Fecha_Pedido"],
-							"cantidad_productos"=> $row["cantidad_productos"],
-							"total_a_pagar"=> $row["Valor_Total"],
-									   
-						);
-						$count = 0;
-						//ITERA ARRAY DE PRODUCTOS
-						while($count < count($countArray)){
-							//COMPRUEBA QUE PRODUCTO PERTENECEN A ESTE PROVEEDOR, Y LOS GUARDA COMO
-							// UN ARRAY
-							if($countArray[$count]["id_pedido"] == $condition){
-								$itemDetail =array(
-									"id_producto" => $countArray[$count]["id_producto"],
-									"nombre_producto" => $countArray[$count]["nombre_producto"],
-									"cantidad_producto" => $countArray[$count]["cantidad_producto"],
-									"precio_producto"=>$countArray[$count]["precio_producto"],
-								);
-								$item ["productos"][] = $itemDetail;
+				$count++;
+			}
 
-							}
-							$count++;
-						}
-						
-				
 
-					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['pedidos'][]=$item;
-					//IMPRIMIMOS OBJETO JSON
-					}
-				break;
-			
-			case "envios":
-				$sql="SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+			$json['pedidos'][] = $item;
+			//IMPRIMIMOS OBJETO JSON
+		}
+		break;
+
+	case "envios":
+		$sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
 				,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
 				FROM envios e 
 				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
 				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
 				JOIN pagos p ON e.Id_Pago = p.Id_Pago";
 
-				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
-	
-				while($row = $result ->fetch(PDO::FETCH_ASSOC)){
-				
-						$item =array(
-							"id" => $row["Id_Envio"],
-							"usuario_a_enviar"=> $row["Nombre_Usuario"] . ' ' .$row["Apellidos_Usuario"],
-							"cobertura"=> $row["Cobertura"],
-							"fecha_entrega"=> $row["Fecha_Entrega"],
-							"id_pedido"=> $row["Id_Pedido"],
-							"pago"=> $row["Tipo_Pago"],
-							"total"=> $row["Valor_Total"]
-							
-									   
-						);
-					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['envios'][]=$item;
-					//IMPRIMIMOS OBJETO JSON
-					}
-				break;
-				
+		$result = $conDb->prepare($sql);
+		$rpta = $result->execute();
+
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+
+			$item = array(
+				"id" => $row["Id_Envio"],
+				"usuario_a_enviar" => $row["Nombre_Usuario"] . ' ' . $row["Apellidos_Usuario"],
+				"cobertura" => $row["Cobertura"],
+				"fecha_entrega" => $row["Fecha_Entrega"],
+				"id_pedido" => $row["Id_Pedido"],
+				"pago" => $row["Tipo_Pago"],
+				"total" => $row["Valor_Total"]
 
 
+			);
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+			$json['envios'][] = $item;
+			//IMPRIMIMOS OBJETO JSON
+		}
+		break;
 }
 
-		if(!empty($json) && $rpta!==false){
-			echo json_encode($json);
-		}else{
-			echo json_encode(array("Rtpa001"=>"Sin resultado"));
-		}
-		
-?>
+if (!empty($json) && $rpta !== false) {
+	echo json_encode($json);
+} else {
+	echo json_encode(array("response" => "Error","Code 001 = "=>"No found param need"));
+}

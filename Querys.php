@@ -70,13 +70,12 @@ switch ($case) {
 		case "proveedores":
 
 			//EJECUTA DOS CONSULTAS, UNA: PROVEEDORES, DOS: PRODUCTOS DE PROVEEDORES
-			$sql1="SELECT u.Id_Usuario,u.Nombre_Usuario,u.Apellidos_Usuario,u.Email_Usuario,u.Telefono_Usuario,u.Direccion_Usuario, 
+			$sql1="SELECT DISTINCT u.Id_Usuario,u.Nombre_Usuario,u.Apellidos_Usuario,u.Email_Usuario,u.Telefono_Usuario,u.Direccion_Usuario, 
 			l.Nombre_Municipio,d.Nombre_Departamento
 			FROM productos_proveedores pr
 			JOIN usuarios u ON u.Id_Usuario = pr.Id_Proveedor
 			JOIN localidad l ON u.Id_Usuario = l.Id_Municipio
 			JOIN departamentos d ON d.Id_Departamento = l.Id_Departamento 
-			GROUP BY u.Nombre_Usuario
             ORDER BY u.Id_Usuario";
 
 			$sql2 = "SELECT u.Id_Usuario,p.Nombre_Producto,p.Marca_Producto,p.Descripcion_Producto,
