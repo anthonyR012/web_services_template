@@ -12,8 +12,9 @@ class SecurityPassClass {
     public function hash() {
         return password_hash($this->password, $this->hash, $this->cost);
     }
-    public function verify() {
-        return password_verify($this->password, $this->hash);
+    public function verify($hashBBDD) {
+           
+        return password_verify($this->password, $hashBBDD);
     }
 }
 

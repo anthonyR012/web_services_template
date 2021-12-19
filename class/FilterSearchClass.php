@@ -1,8 +1,7 @@
 <?php
-include_once('SecurityPassClass.php');
 class FilterSearchClass{
     private $sqlProductProveedor;
-
+    private $sqlProductPedidos;
     public function verifiedParamProduct($searchName,$searchPriceMenor,
     $searchPriceMayor,$searchCategory,$searchBrand){
 
@@ -155,7 +154,7 @@ class FilterSearchClass{
 
     }
 
-    public function verifiedParamUsers($searchNameUser,$searchApellido,$searchCiudad,$searchDepartment){
+    public function verifiedParamUsers($searchId,$searchNameUser,$searchApellido,$searchCiudad,$searchDepartment){
         $sql="";
         //FILTRO POR NOMBRE, APELLIDO, CIUDAD Y DEPARTAMENTO
         if(!empty($searchNameUser) 
@@ -163,7 +162,7 @@ class FilterSearchClass{
         && !empty($searchCiudad) 
         && !empty($searchDepartment)){
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE l.Nombre_Municipio LIKE '$searchCiudad%'
             AND d.Nombre_Departamento LIKE '$searchDepartment%'
@@ -176,7 +175,7 @@ class FilterSearchClass{
         && !empty($searchCiudad) 
         && empty($searchDepartment)){
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE l.Nombre_Municipio LIKE '$searchCiudad%'
             AND u.Nombre_Usuario LIKE '$searchNameUser%'
@@ -188,7 +187,7 @@ class FilterSearchClass{
         && empty($searchCiudad) 
         && empty($searchDepartment)){
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'";
@@ -200,7 +199,7 @@ class FilterSearchClass{
         && empty($searchDepartment)){
           
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'";
 
@@ -211,7 +210,7 @@ class FilterSearchClass{
         && !empty($searchDepartment)){
 
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE l.Nombre_Municipio LIKE '$searchCiudad%'
             AND d.Nombre_Departamento LIKE '$searchDepartment%'
@@ -223,7 +222,7 @@ class FilterSearchClass{
         && !empty($searchDepartment)){
 
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE l.Nombre_Municipio LIKE '$searchCiudad%'
             AND d.Nombre_Departamento LIKE '$searchDepartment%'";
@@ -235,7 +234,7 @@ class FilterSearchClass{
         && !empty($searchDepartment)){
 
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE d.Nombre_Departamento LIKE '$searchDepartment%'";
         
@@ -246,7 +245,7 @@ class FilterSearchClass{
         && empty($searchDepartment)){
 
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE l.Nombre_Municipio LIKE '$searchCiudad%'";
         
@@ -257,9 +256,19 @@ class FilterSearchClass{
         && empty($searchDepartment)){
 
             $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
             WHERE u.Apellidos_Usuario LIKE '$searchApellido%'";
+        //FILTRO POR ID
+        }else if(!empty($searchId)
+        && empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)){
+            $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
+			JOIN localidad l ON u.Id_localidad = l.Id_localidad
+			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
+            WHERE u.Id_Usuario  LIKE '$searchId%'";
 
         }
 
@@ -511,17 +520,1162 @@ class FilterSearchClass{
         return $sql;
 
     }
+    public function verifiedParamPqrs($searchNameUser,$searchApellido,$searchCiudad,$searchDepartment,$searchState,$searchReason,$searchId){
+        $sql="";
+        //FILTRO POR TODO
+        if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)
+        && !empty($searchReason)){
 
-  
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+		dp.Nombre_Departamento,l.Nombre_Municipio,
+		p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+		FROM usuarios u 
+		JOIN localidad l ON l.Id_localidad = u.Id_localidad
+		JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+		JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+		JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+		WHERE ep.Tipo_Estado = '$searchState'
+		AND ep.Razon_Estado = '$searchReason'
+		AND u.Nombre_Usuario LIKE '$searchNameUser%'
+		AND u.Apellidos_Usuario LIKE '$searchApellido%'
+		AND l.Nombre_Municipio = '$searchCiudad'
+		AND dp.Nombre_Departamento = '$searchDepartment'";
+
+        //FILTRO POR NOMBRE, APELLIDO, CIUDAD, DEPARTAMENTO Y ESTADO  
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)
+        && empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Tipo_Estado = '$searchState'
+            AND u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dp.Nombre_Departamento = '$searchDepartment'";
+
+             //FILTRO POR NOMBRE , APELLIDO, CIUDAD Y DEPARTAMENTO
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dp.Nombre_Departamento = '$searchDepartment'";
+
+             //FILTRO POR NOMBRE , APELLIDO Y CIUDAD 
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+          
+           $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'";
+
+            //FILTRO POR NOMBRE Y APELLIDO
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'";
+         //FILTRO POR NOMBRE
+        }else if(!empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'";
+        
+        //FILTRO POR APELLIDO,CIUDAD, DEPARTAMENTO,ESTADO Y RAZON
+        }else if(empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)
+        && !empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Tipo_Estado = '$searchState'
+            AND ep.Razon_Estado = '$searchReason'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dp.Nombre_Departamento = '$searchDepartment'";
+        
+        //FILTRO POR CIUDAD ,DEPARTAMENTO , ESTADO Y RAZON
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)
+        && !empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Tipo_Estado = '$searchState'
+            AND ep.Razon_Estado = '$searchReason'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dp.Nombre_Departamento = '$searchDepartment'";
+        
+        //FILTRO POR DEPARTAMENTO , ESTADO Y RAZON
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)
+        && !empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Tipo_Estado = '$searchState'
+            AND ep.Razon_Estado = '$searchReason'
+            AND dp.Nombre_Departamento = '$searchDepartment'";
+        // FILTRO POR ESTADO Y RAZON
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && !empty($searchState)
+        && !empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Tipo_Estado = '$searchState'
+            AND ep.Razon_Estado = '$searchReason'";
+        //FILTRO POR RAZON
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)
+        && !empty($searchReason)){
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Razon_Estado = '$searchReason'";
+        //FILTRO POR ESTADO
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && !empty($searchState)
+        && empty($searchReason)){
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE ep.Tipo_Estado = '$searchState'";
+        //FILTRO POR DEPARTAMENTO
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE dp.Nombre_Departamento = '$searchDepartment'";
+        //FILTRO POR CIUDAD
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE l.Nombre_Municipio = '$searchCiudad'";
+        //FILTRO POR APELLIDO
+        }else if(empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE u.Apellidos_Usuario LIKE '$searchApellido%'";
+
+            // FILTRO POR EMAIL
+        }else if(!empty($searchId)
+        && empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad)  
+        && empty($searchDepartment)
+        && empty($searchState)
+        && empty($searchReason)){
+
+            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
+            dp.Nombre_Departamento,l.Nombre_Municipio,
+            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            FROM usuarios u 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
+            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            WHERE u.Id_Usuario = '$searchId'";
+
+        }
+        return $sql;    
+    }
+
+    public function verifiedParamProductOfert($searchName,$searchPriceMenor,
+    $searchPriceMayor,$searchCategory,$searchBrand,$searchTypeOfert){
+
+        $sql = "";
+        //FILTRO POR TODOS
+        if(!empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)
+        && !empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Nombre_Producto LIKE '$searchName%'
+            AND p.Marca_Producto LIKE '$searchBrand%'
+            AND o.Tipo_de_Oferta = '$searchTypeOfert'
+            AND po.Precio_Produc_Ofert < $searchPriceMenor
+            AND po.Precio_Produc_Ofert > $searchPriceMayor
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        //FILTRO POR TIPO OFERTA, PRECIO MAYOR Y MENOR, CATEGORIA Y MARCA
+        }else if(empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)
+        && !empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Marca_Producto LIKE '$searchBrand%'
+            AND o.Tipo_de_Oferta = '$searchTypeOfert'
+            AND po.Precio_Produc_Ofert < $searchPriceMenor
+            AND po.Precio_Produc_Ofert > $searchPriceMayor
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        //FILTRO POR TIPO OFERTA, PRECIO MAYOR , CATEGORIA Y MARCA
+        }else if(empty($searchName) 
+        && empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)
+        && !empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Marca_Producto LIKE '$searchBrand%'
+            AND o.Tipo_de_Oferta = '$searchTypeOfert'
+            AND po.Precio_Produc_Ofert > $searchPriceMayor
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        //FILTRO POR CATEGORIA, MARCA Y TIPO OFERTA
+        }else if(empty($searchName) 
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)
+        && !empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Marca_Producto LIKE '$searchBrand%'
+            AND o.Tipo_de_Oferta = '$searchTypeOfert'
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        //FILTRO POR  MARCA Y TIPO OFERTA
+        }else if(empty($searchName) 
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && !empty($searchBrand)
+        && !empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Marca_Producto LIKE '$searchBrand%'
+            AND o.Tipo_de_Oferta = '$searchTypeOfert'";
+
+         //FILTRO TIPO OFERTA
+        }else if(empty($searchName) 
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && empty($searchBrand)
+        && !empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE o.Tipo_de_Oferta = '$searchTypeOfert'";
+
+        //FILTRO POR NOMBRE, PRECIO MAYOR Y MENOR, CATEGORIA Y MARCA
+        }else if(!empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Nombre_Producto LIKE '$searchName%'
+            AND p.Marca_Producto LIKE '$searchBrand%'
+            AND po.Precio_Produc_Ofert < $searchPriceMenor
+            AND po.Precio_Produc_Ofert > $searchPriceMayor
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        //FILTRO POR NOMBRE, PRECIO MAYOR Y MENOR, CATEGORIA 
+        }else if(!empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Nombre_Producto LIKE '$searchName%'
+            AND po.Precio_Produc_Ofert < $searchPriceMenor
+            AND po.Precio_Produc_Ofert > $searchPriceMayor
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        //FILTRO POR NOMBRE, PRECIO MAYOR Y MENOR
+        }else if(!empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Nombre_Producto LIKE '$searchName%'
+            AND po.Precio_Produc_Ofert < $searchPriceMenor
+            AND po.Precio_Produc_Ofert > $searchPriceMayor";
+
+        //FILTRO POR NOMBRE, PRECIO MENOR
+        }else if(!empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Nombre_Producto LIKE '$searchName%'
+            AND po.Precio_Produc_Ofert < $searchPriceMenor";
+
+        //FILTRO POR NOMBRE
+        }else if(!empty($searchName) 
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Nombre_Producto LIKE '$searchName%'";
+
+        //FILTRO POR PRECIO MENOR Y MAYOR
+        }else if(empty($searchName) 
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE po.Precio_Produc_Ofert < $searchPriceMenor
+            AND po.Precio_Produc_Ofert > $searchPriceMayor";
+
+        //FILTRO POR CATEGORIA Y MARCA
+        }else if(empty($searchName) 
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)
+        && empty($searchTypeOfert)){
+            
+            $sql = "SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
+            po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
+            p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+            p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
+            o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
+            FROM productos p
+            JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
+            JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta
+            JOIN categorias_productos cp ON cp.Id_Categoria = p.Id_Categoria
+            WHERE p.Marca_Producto LIKE '$searchBrand%'
+            AND cp.Nombre_Categoria LIKE '$searchCategory'";
+
+        }
+
+        return $sql;
+
+    }
+
+    public function verifiedParamPedidos($searchNameUser,$searchApellido,$searchCiudad,$searchDepartment,$searchState){
+        $sql="";
+        //FILTRO POR TODO
+        if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE p.Estado_Pedido = '$searchState'
+            AND u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'
+            GROUP BY p.Id_Pedido";
+
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE p.Estado_Pedido = '$searchState'
+            AND u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'";
+
+
+        //FILTRO POR NOMBRE, APELLIDO, CIUDAD Y DEPARTAMENTO   
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'
+            GROUP BY p.Id_Pedido";
+
+
+            
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'";
+        
+             //FILTRO POR NOMBRE , APELLIDO Y CIUDAD 
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            GROUP BY p.Id_Pedido";
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'";
+
+             //FILTRO POR NOMBRE Y APELLIDO 
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)){
+          
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            GROUP BY p.Id_Pedido";
+
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'";
+
+            //FILTRO POR NOMBRE
+        }else if(!empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            GROUP BY p.Id_Pedido";
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'";
+         //FILTRO POR APELLIDO, CIUDAD,DEPARTAMENTO Y ESTADO
+        }else if(empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)){
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE p.Estado_Pedido = '$searchState'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'
+            GROUP BY p.Id_Pedido";
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE p.Estado_Pedido = '$searchState'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'";
+        
+        //FILTRO POR CIUDAD, DEPARTAMENTO,ESTADO 
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE p.Estado_Pedido = '$searchState'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'
+            GROUP BY p.Id_Pedido";
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE p.Estado_Pedido = '$searchState'
+            AND l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'";
+        
+        //FILTRO POR CIUDAD Y DEPARTAMENTO 
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'
+            GROUP BY p.Id_Pedido";
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE l.Nombre_Municipio = '$searchCiudad'
+            AND dep.Nombre_Departamento = '$searchDepartment'";
+        
+        //FILTRO POR ESTADO
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && !empty($searchState)){
+
+            $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            FROM pedidos p 
+            JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            WHERE p.Estado_Pedido = '$searchState'
+            GROUP BY p.Id_Pedido";
+
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            ,dp.Precio_Producto,p.Id_Pedido
+            FROM productos pd
+            JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
+            JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
+            JOIN usuarios u  ON u.Id_Usuario = p.Id_Usuario
+            JOIN localidad l ON l.Id_localidad = u.Id_localidad
+            JOIN departamentos dep ON dep.Id_Departamento = l.Id_Departamento
+            WHERE p.Estado_Pedido = '$searchState'";
+
+        
+        }
+        return $sql;
+    }
+    public function verifiedParamEnvios($searchNameUser,$searchApellido,$searchCiudad,$searchDepartment,$searchDate){
+        
+        $sql="";
+        //FILTRO POR TODO
+        if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE e.Fecha_Entrega = '$searchDate'
+           		AND u.Nombre_Usuario LIKE '$searchNameUser%'
+            	AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            	AND l.Nombre_Municipio = '$searchCiudad'
+            	AND dp.Nombre_Departamento = '$searchDepartment'";
+
+
+          
+
+        //FILTRO POR NOMBRE, APELLIDO, CIUDAD Y DEPARTAMENTO   
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            	AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            	AND l.Nombre_Municipio = '$searchCiudad'
+            	AND dp.Nombre_Departamento = '$searchDepartment'";
+
+
+            
+        
+             //FILTRO POR NOMBRE , APELLIDO Y CIUDAD 
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            	AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            	AND l.Nombre_Municipio = '$searchCiudad'";
+
+        
+
+             //FILTRO POR NOMBRE Y APELLIDO 
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchDate)){
+          
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            	AND u.Apellidos_Usuario LIKE '$searchApellido%'";
+
+
+        
+
+            //FILTRO POR NOMBRE
+        }else if(!empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE u.Nombre_Usuario LIKE '$searchNameUser%'";
+
+         //FILTRO POR APELLIDO, CIUDAD,DEPARTAMENTO Y FECHA
+        }else if(empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchDate)){
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE e.Fecha_Entrega = '$searchDate'
+           		AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            	AND l.Nombre_Municipio = '$searchCiudad'
+            	AND dp.Nombre_Departamento = '$searchDepartment'";
+
+           
+        
+        //FILTRO POR CIUDAD, DEPARTAMENTO,FECHA 
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && !empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE e.Fecha_Entrega = '$searchDate'
+            	AND l.Nombre_Municipio = '$searchCiudad'
+            	AND dp.Nombre_Departamento = '$searchDepartment'";
+
+     
+        
+        //FILTRO POR CIUDAD Y DEPARTAMENTO 
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchCiudad) 
+        && !empty($searchDepartment)
+        && empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE l.Nombre_Municipio = '$searchCiudad'
+            	AND dp.Nombre_Departamento = '$searchDepartment'";
+
+        
+        
+        //FILTRO POR FECHA
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchCiudad) 
+        && empty($searchDepartment)
+        && !empty($searchDate)){
+
+            $sql = "SELECT e.Id_Envio,e.Cobertura,e.Fecha_Entrega
+			,e.Id_Pedido,p.Tipo_Pago,pd.Valor_Total,u.Nombre_Usuario,u.Apellidos_Usuario
+				FROM envios e 
+				JOIN pedidos pd ON pd.Id_Pedido = e.Id_Pedido
+				JOIN usuarios u ON u.Id_Usuario = pd.Id_Usuario
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
+				JOIN pagos p ON e.Id_Pago = p.Id_Pago
+                WHERE e.Fecha_Entrega = '$searchDate'";
+
+           
+
+        
+        }
+        return $sql;
+
+    }
+    public function verifiedParamComentarios($searchNameUser,$searchApellido,$searchDate){
+
+        $sql="";
+        //FILTRO POR TODO
+        if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && !empty($searchDate)){
+
+            $sql = "SELECT C.*,P.Nombre_Producto,P.Marca_Producto,U.Nombre_Usuario,U.Apellidos_Usuario FROM comentarios c 
+            JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
+            JOIN productos p ON p.Id_Producto = c.Id_Producto
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'
+            AND c.Fecha_Comentario = '$searchDate'";
+
+
+          
+
+        //FILTRO POR NOMBRE, APELLIDO 
+        }else if(!empty($searchNameUser) 
+        && !empty($searchApellido) 
+        && empty($searchDate)){
+
+            $sql = "SELECT C.*,P.Nombre_Producto,P.Marca_Producto,U.Nombre_Usuario,U.Apellidos_Usuario FROM comentarios c 
+            JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
+            JOIN productos p ON p.Id_Producto = c.Id_Producto
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
+            AND u.Apellidos_Usuario LIKE '$searchApellido%'";
+
+
+        //FILTRO POR NOMBRE  
+        }else if(!empty($searchNameUser) 
+        && empty($searchApellido) 
+        && empty($searchDate)){
+
+            $sql = "SELECT C.*,P.Nombre_Producto,P.Marca_Producto,U.Nombre_Usuario,U.Apellidos_Usuario FROM comentarios c 
+            JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
+            JOIN productos p ON p.Id_Producto = c.Id_Producto
+            WHERE u.Nombre_Usuario LIKE '$searchNameUser%'";
+
+
+        //FILTRO POR FECHA
+        }else if(empty($searchNameUser) 
+        && empty($searchApellido) 
+        && !empty($searchDate)){
+            $sql = "SELECT C.*,P.Nombre_Producto,P.Marca_Producto,U.Nombre_Usuario,U.Apellidos_Usuario FROM comentarios c 
+            JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
+            JOIN productos p ON p.Id_Producto = c.Id_Producto
+            WHERE c.Fecha_Comentario = '$searchDate'";
+        }
+
+        return $sql;
+    }
+
     public function verifiedParamLogin($seachEmail,$searchPass){
         $sql = "";
         if(!empty($seachEmail)
         && !empty($searchPass)){
 
-                $sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-                JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+                $sql="SELECT u.*,p.Rol_Permiso,d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
+                JOIN roles r ON r.Id_Usuario = u.Id_Usuario
+                JOIN permisos p ON p.Id_Permiso = r.Id_Permiso
+                JOIN localidad l ON u.Id_localidad = l.Id_localidad
                 JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento
-                WHERE u.Email_Usuario = '$seachEmail'";
+                WHERE u.Email_Usuario = '$seachEmail'
+                ORDER BY p.Id_Permiso DESC
+                LIMIT 1";
                 
         }
 
@@ -531,6 +1685,8 @@ class FilterSearchClass{
     public function verifiedParamProductProveedors(){
         return $this->sqlProductProveedor;
     }
-
-
+    public function verifiedParamProductPedidos(){
+        return $this->sqlProductPedidos;
+    }
+    
 }

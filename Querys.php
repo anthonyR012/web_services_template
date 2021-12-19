@@ -1,9 +1,11 @@
 <?PHP
-include_once('conexion.php');
+include_once('Conexion.php');
 header('Access-Control-Allow-Origin: *');
 
 //CAPTURA PARAMETRO DE GET 
-$case=$_GET["case"];
+$case = $_GET["case"];
+
+ 
 $json=array();
 //INSTANCIACION DE MI CONEXION A BBDD
 $objConectar = new Conectar();
@@ -15,7 +17,7 @@ switch ($case) {
 			$sql="SELECT p.*,c.Nombre_Categoria FROM productos p
 			JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria";
 			$result = $conDb->prepare($sql);
-			$rpta = $result->execute();
+			$result->execute();
 			
 	        	
 				while($row = $result->fetch(PDO::FETCH_ASSOC)){
@@ -32,7 +34,7 @@ switch ($case) {
 						"Garantia" => $row["Garantia_Producto"],
 						"Categoria"=>$row["Nombre_Categoria"],
 						);
-						$json['productos'][]=$item;
+						$json['response'][]=$item;
 				}
 
 			
@@ -41,30 +43,33 @@ switch ($case) {
 
 		case "usuarios":
 			$sql="SELECT u.*, d.Nombre_Departamento , l.Nombre_Municipio FROM usuarios u
-			JOIN localidad l ON u.Id_localidad = l.Id_Municipio
+			JOIN localidad l ON u.Id_localidad = l.Id_Localidad
 			JOIN departamentos d ON l.Id_Departamento = d.Id_Departamento";
-			$result = $conDb->prepare($sql);
-			$rpta = $result->execute();
-
-			while($row =$result ->fetch(PDO::FETCH_ASSOC)){
-			
-				$item =array(
-					"id" => $row["Id_Usuario"],
-					"Nombre"=> $row["Nombre_Usuario"],
-					"Apellido" => $row["Apellidos_Usuario"],
-					"Email" => $row["Email_Usuario"],
-					"Telefono" => $row["Telefono_Usuario"],
-					"Ciudad" =>$row["Nombre_Municipio"],
-					"Departamento" =>$row["Nombre_Departamento"],
-					"Direccion" => $row["Direccion_Usuario"],
-					"Contrasena" => $row["Password_Usuario"]
-					
-				);
-				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-				$json['usuarios'][]=$item;
-				//IMPRIMIMOS OBJETO JSON
 				
-			}
+
+				$result = $conDb->prepare($sql);
+				$result->execute();
+				
+					while($row =$result ->fetch(PDO::FETCH_ASSOC)){
+						
+						$item =array(
+							"id" => $row["Id_Usuario"],
+							"Nombre"=> $row["Nombre_Usuario"],
+							"Apellido" => $row["Apellidos_Usuario"],
+							"Email" => $row["Email_Usuario"],
+							"Telefono" => $row["Telefono_Usuario"],
+							"Ciudad" =>$row["Nombre_Municipio"],
+							"Departamento" =>$row["Nombre_Departamento"],
+							"Direccion" => $row["Direccion_Usuario"],
+							"Contrasena" => $row["Password_Usuario"]
+							
+						);
+						//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+						$json['response'][]=$item;
+						//IMPRIMIMOS OBJETO JSON
+						
+					}
+			
 			break;
 
 		case "proveedores":
@@ -74,23 +79,23 @@ switch ($case) {
 			l.Nombre_Municipio,d.Nombre_Departamento
 			FROM productos_proveedores pr
 			JOIN usuarios u ON u.Id_Usuario = pr.Id_Proveedor
-			JOIN localidad l ON u.Id_Usuario = l.Id_Municipio
+			JOIN localidad l ON u.Id_Localidad = l.Id_Localidad
 			JOIN departamentos d ON d.Id_Departamento = l.Id_Departamento 
             ORDER BY u.Id_Usuario";
-
+			
 			$sql2 = "SELECT u.Id_Usuario,p.Nombre_Producto,p.Marca_Producto,p.Descripcion_Producto,
 			p.Imagen_Producto,p.Garantia_Producto,p.Existencia_Producto,p.Id_Producto
 						,p.Precio_Producto FROM productos_proveedores pr
 						JOIN usuarios u ON u.Id_Usuario = pr.Id_Proveedor
 						JOIN productos p ON p.Id_Producto = pr.Id_Producto
-						JOIN localidad l ON u.Id_Usuario = l.Id_Municipio
+						JOIN localidad l ON u.Id_Localidad = l.Id_Localidad
 						JOIN departamentos d ON d.Id_Departamento = l.Id_Departamento 
 						ORDER BY u.Id_Usuario";
 
 			$result = $conDb->prepare($sql1);
 			$result2 = $conDb->prepare($sql2);
-			$rpta = $result->execute();
-			$rpta2 = $result2->execute();
+			$result->execute();
+			$result2->execute();
 			$countArray = array();
 			//GUARDAMOS EN ARRAY SEGUNDA CONSULTA (CONSULTA PRODUCTOS)
 			while($row = $result2 ->fetch(PDO::FETCH_ASSOC)){
@@ -149,7 +154,7 @@ switch ($case) {
 					}
 					//GUARDAMOS EN JSON LOS DATOS COMPLETOS DE PROVEEDOR CON SUS PRODUCTOS
 					
-					$json['proveedores'][] = $item;	
+					$json['response'][] = $item;	
 					
 				}
 	
@@ -169,7 +174,7 @@ switch ($case) {
 			JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS";
 
 			$result = $conDb->prepare($sql);
-			$rpta = $result->execute();
+			$result->execute();
 
 			while($row =$result ->fetch(PDO::FETCH_ASSOC)){
 				$item =array(
@@ -181,7 +186,7 @@ switch ($case) {
 					
 				);
 				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-				$json['pqrs'][]=$item;
+				$json['response'][]=$item;
 				//IMPRIMIMOS OBJETO JSON
 			}
 			break;
@@ -197,7 +202,7 @@ switch ($case) {
 				JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta";
 	
 				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
+				$result->execute();
 	
 				while($row =$result ->fetch(PDO::FETCH_ASSOC)){
 					$item =array(
@@ -218,7 +223,7 @@ switch ($case) {
 						
 					);
 					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['productosOfertas'][]=$item;
+					$json['response'][]=$item;
 					//IMPRIMIMOS OBJETO JSON
 				}
 				break;
@@ -226,7 +231,7 @@ switch ($case) {
 				$sql="SELECT * FROM categorias_productos";
 	
 				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
+				$result->execute();
 	
 				while($row =$result ->fetch(PDO::FETCH_ASSOC)){
 				
@@ -236,18 +241,19 @@ switch ($case) {
 									   
 						);
 					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['productosOfertas'][]=$item;
+					$json['response'][]=$item;
 					//IMPRIMIMOS OBJETO JSON
 					}
 				break;
 
 			case "pedidos":
-				$sql1="SELECT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-				(SELECT sum(Cantidad_Producto) 
-				FROM detalle_pedidos) as cantidad_productos ,p.Valor_Total,
-				u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+				$sql1="SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
+				sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+				 u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,l.Nombre_Municipio 
 				FROM pedidos p 
 				JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
+				JOIN localidad l ON l.Id_localidad = u.Id_localidad
+				JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
 				JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
 				JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
 				GROUP BY p.Id_Pedido";
@@ -258,7 +264,7 @@ switch ($case) {
 				JOIN detalle_pedidos dp ON p.Id_Producto = dp.Id_Producto
 				JOIN pedidos pd ON pd.Id_Pedido = dp.Id_Pedido";
 				$resultPedidos = $conDb->prepare($sql1);
-				$rpta = $resultPedidos->execute();
+				$resultPedidos->execute();
 
 				$resultDetalles = $conDb->prepare($sql2);
 				$resultDetalles->execute();
@@ -281,6 +287,7 @@ switch ($case) {
 						$condition = $row['Id_Pedido'];
 						$item =array(
 							"id" => $condition,
+							"localidad"=> $row["Nombre_Municipio"],
 							"estado"=> $row["Estado_Pedido"],
 							"usuario"=> $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 							"id_usuario"=> $row["Id_Usuario"],
@@ -310,7 +317,7 @@ switch ($case) {
 				
 
 					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['pedidos'][]=$item;
+					$json['response'][]=$item;
 					//IMPRIMIMOS OBJETO JSON
 					}
 				break;
@@ -324,7 +331,7 @@ switch ($case) {
 				JOIN pagos p ON e.Id_Pago = p.Id_Pago";
 
 				$result = $conDb->prepare($sql);
-				$rpta = $result->execute();
+				$result->execute();
 	
 				while($row = $result ->fetch(PDO::FETCH_ASSOC)){
 				
@@ -340,19 +347,117 @@ switch ($case) {
 									   
 						);
 					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
-					$json['envios'][]=$item;
+					$json['response'][]=$item;
 					//IMPRIMIMOS OBJETO JSON
 					}
 				break;
 				
+			case "comentarios":
+					$sql="SELECT C.*,P.Nombre_Producto,P.Marca_Producto,U.Nombre_Usuario,U.Apellidos_Usuario FROM comentarios c 
+					JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
+					JOIN productos p ON p.Id_Producto = c.Id_Producto";
+	
+					$result = $conDb->prepare($sql);
+					$result->execute();
+		
+					while($row = $result ->fetch(PDO::FETCH_ASSOC)){
+					
+					$item =array(
+						"id" => $row["Id_Comentario"],
+						"comentario"=> $row["Descripcion_Comentario"],
+						"producto"=> $row["Nombre_Producto"],
+						"marca"=> $row["Marca_Producto"],
+						"fecha_entrega"=> $row["Fecha_Comentario"],
+						"usuario"=> $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
+								
+					);
+						//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+						$json['response'][]=$item;
+						//IMPRIMIMOS OBJETO JSON
+						}
+					break;
 
+			case "departamentos":
+						$sql="SELECT * FROM departamentos";
+		
+						$result = $conDb->prepare($sql);
+						$result->execute();
+			
+						while($row = $result ->fetch(PDO::FETCH_ASSOC)){
+						
+						$item =array(
+							"id" => $row["Id_Departamento"],
+							"nombre"=> $row["Nombre_Departamento"],
+						);
+							//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+							$json['response'][]=$item;
+							//IMPRIMIMOS OBJETO JSON
+							}
+						break;
+			case "municipios":
+							$sql="SELECT Id_Localidad,Nombre_Municipio
+							FROM localidad";
+			
+							$result = $conDb->prepare($sql);
+							$result->execute();
+				
+							while($row = $result ->fetch(PDO::FETCH_ASSOC)){
+							
+							$item =array(
+								"id" => $row["Id_Localidad"],
+								"nombre"=> $row["Nombre_Municipio"],
+							);
+								//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+								$json['response'][]=$item;
+								//IMPRIMIMOS OBJETO JSON
+								}
+							break;
+								
+			case "activos":
+								$sql="SELECT COUNT(Id_Usuario) as total FROM `usuarios` WHERE `Log_Usuario` = 'activo'";
+					
+								$result = $conDb->prepare($sql);
+								$result->execute();
+					
+								while($row =$result ->fetch(PDO::FETCH_ASSOC)){
+								
+										$item =array(
+											"cuenta" => $row["total"],
+										);
+									//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+									$json['response'][]=$item;
+									//IMPRIMIMOS OBJETO JSON
+									}
+								break;
+			case "registrados":
+						$sql="SELECT COUNT(*) as cuenta,MONTH(Creado_En) as mes
+						FROM usuarios 
+						GROUP BY MONTH(Creado_En) 
+						ORDER BY MONTH(Creado_En) ASC";
+
+						$result = $conDb->prepare($sql);
+						$result->execute();
+				
+						while($row = $result ->fetch(PDO::FETCH_ASSOC)){
+						
+						$item =array(
+							$row["mes"] => $row["cuenta"]
+						);
+						
+							//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+						$json['response'][]=$item;
+							//IMPRIMIMOS OBJETO JSON
+							}
+					break;						
+		
+			
 
 }
 
-		if(!empty($json) && $rpta!==false){
-			echo json_encode($json);
-		}else{
-			echo json_encode(array("Rtpa001"=>"Sin resultado"));
-		}
+if (!empty($json)) {
+	echo json_encode($json);
+} else {
+	echo json_encode(array("response" => "Error","Code001"=>"No found param"));
+}
 		
 ?>

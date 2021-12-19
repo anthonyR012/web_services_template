@@ -2,7 +2,7 @@
 class Conectar{
 //CONEXION BASE DE DATOS, DEVUELVE PDO CONEXION
 
-	private $name = "sam";
+	private $name = "buyme";
 	private $host = "localhost";
 	private $user = "rubioAdminStore";
 	private $passUser = "sI9Y5xTfSWm065WO";
