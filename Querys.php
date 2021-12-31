@@ -249,7 +249,7 @@ switch ($case) {
 			case "pedidos":
 				$sql1="SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
 				sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-				 u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,l.Nombre_Municipio 
+				 u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
 				FROM pedidos p 
 				JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
 				JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -291,6 +291,7 @@ switch ($case) {
 							"estado"=> $row["Estado_Pedido"],
 							"usuario"=> $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 							"id_usuario"=> $row["Id_Usuario"],
+							"direccion"=> $row["Direccion_Usuario"],
 							"fecha_pedido"=> $row["Fecha_Pedido"],
 							"cantidad_productos"=> $row["cantidad_productos"],
 							"total_a_pagar"=> $row["Valor_Total"],
@@ -429,7 +430,7 @@ switch ($case) {
 									//IMPRIMIMOS OBJETO JSON
 									}
 								break;
-			case "registrados":
+			case "registradosUsuarios":
 						$sql="SELECT COUNT(*) as cuenta,MONTH(Creado_En) as mes
 						FROM usuarios 
 						GROUP BY MONTH(Creado_En) 
@@ -448,7 +449,28 @@ switch ($case) {
 						$json['response'][]=$item;
 							//IMPRIMIMOS OBJETO JSON
 							}
-					break;						
+					break;	
+					
+			case "registradosProductos":
+						$sql="SELECT COUNT(*) as cuenta,MONTH(Creado_En) as mes
+						FROM productos 
+						GROUP BY MONTH(Creado_En) 
+						ORDER BY MONTH(Creado_En) ASC";
+
+						$result = $conDb->prepare($sql);
+						$result->execute();
+				
+						while($row = $result ->fetch(PDO::FETCH_ASSOC)){
+						
+						$item =array(
+							$row["mes"] => $row["cuenta"]
+						);
+						
+							//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+						$json['response'][]=$item;
+							//IMPRIMIMOS OBJETO JSON
+							}
+			break;	
 		
 			
 

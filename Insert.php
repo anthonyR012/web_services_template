@@ -9,13 +9,49 @@ $json = array();
 $objConectar = new Conectar();
 $conDb = $objConectar->getConnection();
 
+$entityBody = json_decode(file_get_contents('php://input'), true);
 
 switch ($case) {
 	case "productos":
-        
+       
+		if(!empty($_GET["nombre"]) 
+		&& !empty($_GET["marca"])  
+		&& !empty($_GET["referencia"])  
+		&& !empty($_GET["descripcion"])
+		&& !empty($_GET["precio"])  
+		&& !empty($_GET["existencia"])
+		&& !empty($entityBody["imagen"])  
+		&& !empty($_GET["garantia"])
+		&& !empty($_GET["categoria"])){
+			
+			$path = "img/".$_GET['referencia'].".jpg";
+		    $url = "http://localhost/webservice/$path";
+		     file_put_contents($path,base64_decode($entityBody["imagen"]));
+		      $bytes = file_get_contents($path);
 
+			$sql = $conDb->prepare("INSERT INTO productos (Id_Producto, Nombre_Producto, Marca_Producto, Ref_Producto, Descripcion_Producto, Precio_Producto, Existencia_Producto,Imagen_Producto, Garantia_Producto, Id_Categoria) VALUES (NULL, :nombre, :marca, :referencia, :descripcion, :precio, :existencia,:imagen, :garantia,:categoria)");
 
-    break;
+			//TODO HACER DISPARADOR PARA INSERTAR EL PRODUCTO 
+			
+			$sql->bindParam(':nombre', $_GET["nombre"]);
+			$sql->bindParam(':marca', $_GET["marca"]);
+			$sql->bindParam(':referencia',$_GET["referencia"]);
+			$sql->bindParam(':descripcion', $_GET["descripcion"]);
+			$sql->bindParam(':precio', $_GET["precio"]);
+			$sql->bindParam(':existencia', $_GET["existencia"]);
+			$sql->bindParam(':imagen', $url);
+			$sql->bindParam(':garantia', $_GET["garantia"]);
+			$sql->bindParam(':categoria', $_GET["categoria"]);
+			
+			$result = $sql->execute();
+			
+			if($result){
+				$item = array("response"=>"insert complete");
+				$json['response'][]=$item;
+				
+			}
+			
+		}
     case "usuarios":
 
 		if(!empty($_POST["nombre"]) 
@@ -52,9 +88,7 @@ switch ($case) {
 			}
 			
 		}
-		
 	// TODO INSERT PARA DEFINIR QUE ROL TENDRA
-    // $sql2 = $conDb->prepare("INSERT INTO roles ('Id_Usuario', 'Id_Permiso') VALUES ('12', '3')");
 	
     break;
 
