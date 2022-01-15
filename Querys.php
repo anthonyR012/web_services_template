@@ -168,10 +168,9 @@ switch ($case) {
 
 		case "pqrs":
 			$sql="SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-			p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado 
+			p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado 
 			FROM usuarios u 
-			JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-			JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS";
+			JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario";
 
 			$result = $conDb->prepare($sql);
 			$result->execute();
@@ -249,17 +248,19 @@ switch ($case) {
 			case "pedidos":
 				$sql1="SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
 				sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-				 u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
+				 u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio,en.Fecha_Entrega,pg.Tipo_Pago 
 				FROM pedidos p 
 				JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
 				JOIN localidad l ON l.Id_localidad = u.Id_localidad
 				JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
 				JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
 				JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+				JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+				JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
 				GROUP BY p.Id_Pedido";
 
 				$sql2 ="SELECT p.Nombre_Producto,p.Id_Producto,dp.Cantidad_Producto
-				,dp.Precio_Producto,pd.Id_Pedido
+				,dp.Precio_Producto,pd.Id_Pedido,p.Imagen_Producto 
 				FROM productos p
 				JOIN detalle_pedidos dp ON p.Id_Producto = dp.Id_Producto
 				JOIN pedidos pd ON pd.Id_Pedido = dp.Id_Pedido";
@@ -277,6 +278,7 @@ switch ($case) {
 							"nombre_producto" => $row["Nombre_Producto"],
 							"cantidad_producto" => $row["Cantidad_Producto"],
 							"precio_producto"=>$row["Precio_Producto"],
+							"imagen_producto"=>$row["Imagen_Producto"],
 						
 					);
 					$countArray[] = $item;
@@ -292,7 +294,9 @@ switch ($case) {
 							"usuario"=> $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 							"id_usuario"=> $row["Id_Usuario"],
 							"direccion"=> $row["Direccion_Usuario"],
-							"fecha_pedido"=> $row["Fecha_Pedido"],
+							"tomado_en"=> $row["Fecha_Pedido"],
+							"entregar_en"=> $row["Fecha_Entrega"],
+							"pago"=> $row["Tipo_Pago"],
 							"cantidad_productos"=> $row["cantidad_productos"],
 							"total_a_pagar"=> $row["Valor_Total"],
 									   
@@ -308,6 +312,7 @@ switch ($case) {
 									"nombre_producto" => $countArray[$count]["nombre_producto"],
 									"cantidad_producto" => $countArray[$count]["cantidad_producto"],
 									"precio_producto"=>$countArray[$count]["precio_producto"],
+									"imagen_producto"=>$countArray[$count]["imagen_producto"],
 								);
 								$item ["productos"][] = $itemDetail;
 
@@ -471,6 +476,26 @@ switch ($case) {
 							//IMPRIMIMOS OBJETO JSON
 							}
 			break;	
+			case "enviosProductos":
+				$sql="SELECT COUNT(*) as cuenta,MONTH(Fecha_Entrega) as mes
+				FROM envios 
+				GROUP BY MONTH(Fecha_Entrega) 
+				ORDER BY MONTH(Fecha_Entrega) ASC";
+
+				$result = $conDb->prepare($sql);
+				$result->execute();
+		
+				while($row = $result ->fetch(PDO::FETCH_ASSOC)){
+				
+				$item =array(
+					$row["mes"] => $row["cuenta"]
+				);
+				
+					//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+				$json['response'][]=$item;
+					//IMPRIMIMOS OBJETO JSON
+					}
+	break;
 		
 			
 

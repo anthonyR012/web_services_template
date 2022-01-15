@@ -19,6 +19,7 @@ $implement = new FilterSearchClass();
 
 
 switch ($case) {
+	
 	case "productos":
 		//FILTRO POR TODOS LOS VALORES
 		
@@ -28,7 +29,8 @@ switch ($case) {
 			!empty($_GET["searchPMenor"]) ? $_GET["searchPMenor"] : null,
 			!empty($_GET["searchPMayor"]) ? $_GET["searchPMayor"] : null,
 			!empty($_GET["searchCategory"]) ? $_GET["searchCategory"] : null,
-			!empty($_GET["searchBrand"]) ? $_GET["searchBrand"] : null
+			!empty($_GET["searchBrand"]) ? $_GET["searchBrand"] : null,
+			!empty($_GET["searchOfert"]) ? $_GET["searchOfert"] : null
 		);
 
 		
@@ -148,11 +150,11 @@ switch ($case) {
 				$result2->execute();
 				
 			}else{
-				echo json_encode(array("response" => "Login failed"));
+				$item =  array("response" => "Login_failed");
 
 			}
 		}else{
-			$item = array("response" => "No found user");
+			$item = array("response" => "No_found_user");
 			
 		}
 			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
@@ -335,8 +337,8 @@ switch ($case) {
 					"id" => $row["Id_PQRS"],
 					"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 					"detalle" => $row["Detalles_PQRS"],
-					"razon" => $row["Razon_Estado"],
-					"estado" => $row["Tipo_Estado"]
+					"estado" => $row["Razon_Estado"],
+					"razon" => $row["Tipo_Estado"]
 	
 				);
 				//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
@@ -427,9 +429,12 @@ switch ($case) {
 					$item = array(
 						"id" => $id_pedido,
 						"estado" => $row["Estado_Pedido"],
+						"localidad"=> $row["Nombre_Municipio"],
 						"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 						"id_usuario" => $row["Id_Usuario"],
+						"direccion"=> $row["Direccion_Usuario"],
 						"fecha_pedido" => $row["Fecha_Pedido"],
+						"pago"=> $row["Tipo_Pago"],
 						"cantidad_productos" => $row["cantidad_productos"],
 						"total_a_pagar" => $row["Valor_Total"],
 
@@ -475,6 +480,7 @@ switch ($case) {
 						"nombre_producto" => $row["Nombre_Producto"],
 						"cantidad_producto" => $row["Cantidad_Producto"],
 						"precio_producto" => $row["Precio_Producto"],
+						"imagen_producto" => $row["Imagen_Producto"],
 
 					);
 					$countArray[] = $item;
@@ -485,9 +491,13 @@ switch ($case) {
 					$item = array(
 						"id" => $condition,
 						"estado" => $row["Estado_Pedido"],
+						"localidad"=> $row["Nombre_Municipio"],
 						"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 						"id_usuario" => $row["Id_Usuario"],
 						"fecha_pedido" => $row["Fecha_Pedido"],
+						"tomado_en"=> $row["Fecha_Pedido"],
+						"entregar_en"=> $row["Fecha_Entrega"],
+						"pago"=> $row["Tipo_Pago"],
 						"cantidad_productos" => $row["cantidad_productos"],
 						"total_a_pagar" => $row["Valor_Total"],
 
@@ -503,6 +513,7 @@ switch ($case) {
 								"nombre_producto" => $countArray[$count]["nombre_producto"],
 								"cantidad_producto" => $countArray[$count]["cantidad_producto"],
 								"precio_producto" => $countArray[$count]["precio_producto"],
+								"imagen_producto"=>$countArray[$count]["imagen_producto"],
 							);
 							$item["productos"][] = $itemDetail;
 						}

@@ -3,7 +3,7 @@ class FilterSearchClass{
     private $sqlProductProveedor;
     private $sqlProductPedidos;
     public function verifiedParamProduct($searchName,$searchPriceMenor,
-    $searchPriceMayor,$searchCategory,$searchBrand){
+    $searchPriceMayor,$searchCategory,$searchBrand,$searchOfert){
 
         $sql = "";
         //FILTRO POR TODOS
@@ -15,10 +15,10 @@ class FilterSearchClass{
             
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
                 JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-                WHERE p.Nombre_Producto like '$searchName%'
-                AND p.Marca_Producto like '$searchBrand%'
+                WHERE p.Nombre_Producto like '%$searchName%'
+                AND p.Marca_Producto like '%$searchBrand%'
                 AND p.Precio_Producto BETWEEN $searchPriceMenor AND $searchPriceMayor
-                AND c.Nombre_Categoria like '$searchCategory%'";
+                AND c.Nombre_Categoria like '%$searchCategory%'";
 
         //FILTRO POR TODOS EXCEPTO MARCA
         }else if(!empty($searchName) 
@@ -29,9 +29,9 @@ class FilterSearchClass{
 
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Nombre_Producto like '$searchName%'
+            WHERE p.Nombre_Producto like '%$searchName%'
             AND p.Precio_Producto BETWEEN $searchPriceMenor AND $searchPriceMayor
-            AND c.Nombre_Categoria like '$searchCategory%'";
+            AND c.Nombre_Categoria like '%$searchCategory%'";
         //FILTRO TODO EXCEPTO MARCA Y CATEGORIA
         }else if(!empty($searchName) 
         && !empty($searchPriceMenor) 
@@ -41,8 +41,9 @@ class FilterSearchClass{
 
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Nombre_Producto like '$searchName%'
+            WHERE p.Nombre_Producto like '%$searchName%'
             AND p.Precio_Producto BETWEEN $searchPriceMenor AND $searchPriceMayor";
+            
          //FILTRO TODO EXCEPTO MARCA,CATEGORIA Y PRECIO MAYOR
         }else if(!empty($searchName) 
             && !empty($searchPriceMenor) 
@@ -52,7 +53,7 @@ class FilterSearchClass{
 
                 $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
                 JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-                WHERE p.Nombre_Producto like '$searchName%'
+                WHERE p.Nombre_Producto like '%$searchName%'
                 AND p.Precio_Producto > $searchPriceMenor";
 
 
@@ -65,7 +66,7 @@ class FilterSearchClass{
 
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Nombre_Producto like '$searchName%'";
+            WHERE p.Nombre_Producto like '%$searchName%'";
 
             //FILTRO POR TODO EXCEPTO NOMBRE
         }else if(empty($searchName) 
@@ -76,32 +77,32 @@ class FilterSearchClass{
 
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Marca_Producto like '$searchBrand%'
+            WHERE p.Marca_Producto like '%$searchBrand%'
             AND p.Precio_Producto BETWEEN $searchPriceMenor AND $searchPriceMayor
-            AND c.Nombre_Categoria like '$searchCategory%'";
+            AND c.Nombre_Categoria like '%$searchCategory%'";
 
             //FILTRO POR TODO EXCEPTO NOMBRE Y PRECIO MENOR
         }else if(empty($searchName) 
-        && empty($searchPriceMenor) 
+        && !empty($searchPriceMenor) 
         && !empty($searchPriceMayor) 
         && !empty($searchCategory) 
-        && !empty($searchBrand)){
+        && empty($searchBrand)){
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Marca_Producto like '$searchBrand%'
-            AND p.Precio_Producto < $searchPriceMayor
-            AND c.Nombre_Categoria like '$searchCategory%'";
+            WHERE p.Precio_Producto BETWEEN $searchPriceMenor AND $searchPriceMayor
+            AND c.Nombre_Categoria like '%$searchCategory%'";
         
-        //FILTRO POR TODO EXCEPTO NOMBRE,PRECIO MENOR Y PRECIO MAYOR
-        }else if(empty($searchName) 
+        //FILTRO POR NOMBRE, CATEGORIA Y MARCA
+        }else if(!empty($searchName) 
         && empty($searchPriceMenor) 
         && empty($searchPriceMayor) 
         && !empty($searchCategory) 
         && !empty($searchBrand)){
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Marca_Producto like '$searchBrand%'
-            AND c.Nombre_Categoria like '$searchCategory%'";
+            WHERE p.Marca_Producto like '%$searchBrand%'
+            AND p.Nombre_Producto like '%$searchName%'
+            AND c.Nombre_Categoria like '%$searchCategory%'";
 
 
         //FILTRO POR MARCA
@@ -113,7 +114,7 @@ class FilterSearchClass{
 
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE p.Marca_Producto like '$searchBrand%'";
+            WHERE p.Marca_Producto like '%$searchBrand%'";
 
         //FILTRO POR CATEGORIA
         }else if(empty($searchName)
@@ -124,7 +125,7 @@ class FilterSearchClass{
 
             $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
-            WHERE c.Nombre_Categoria like '$searchCategory%'";
+            WHERE c.Nombre_Categoria like '%$searchCategory%'";
 
         //FILTRO PRECIO MAYOR
         }else if(empty($searchName)
@@ -148,6 +149,47 @@ class FilterSearchClass{
                 JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
                 WHERE p.Precio_Producto > $searchPriceMenor";
         
+        }else if(!empty($searchName)
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && empty($searchBrand)){
+            
+            $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
+            JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
+            WHERE c.Nombre_Categoria like '%$searchCategory%' 
+            AND p.Nombre_Producto like '%$searchName%'";
+        
+        }else if(!empty($searchName)
+        && !empty($searchPriceMenor) 
+        && !empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && !empty($searchBrand)){
+            
+            $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
+            JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
+            WHERE p.Marca_Producto like '%$searchBrand%' 
+            AND p.Nombre_Producto like '%$searchName%'
+            AND p.Precio_Producto BETWEEN $searchPriceMenor AND $searchPriceMayor";
+        
+        }else if(empty($searchName)
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && !empty($searchCategory) 
+        && !empty($searchBrand)){
+            
+            $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
+            JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
+            WHERE p.Marca_Producto like '%$searchBrand%' 
+            AND c.Nombre_Categoria like '%$searchCategory%'";
+        
+        }
+
+        if(!empty($searchOfert)){
+
+            $sqlPorcion = explode("WHERE", $sql);
+            $sql = $sqlPorcion[0] . " JOIN productos_ofertas pf ON p.Id_Producto = pf.Id_Producto WHERE " . $sqlPorcion[1];
+            
         }
 
         return $sql;
@@ -532,14 +574,13 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
 		dp.Nombre_Departamento,l.Nombre_Municipio,
-		p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+		p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
 		FROM usuarios u 
 		JOIN localidad l ON l.Id_localidad = u.Id_localidad
 		JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
 		JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-		JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-		WHERE ep.Tipo_Estado = '$searchState'
-		AND ep.Razon_Estado = '$searchReason'
+		WHERE p.Tipo_Estado.Tipo_Estado = '$searchState'
+		AND p.Razon_Estado = '$searchReason'
 		AND u.Nombre_Usuario LIKE '$searchNameUser%'
 		AND u.Apellidos_Usuario LIKE '$searchApellido%'
 		AND l.Nombre_Municipio = '$searchCiudad'
@@ -555,13 +596,12 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Tipo_Estado = '$searchState'
+            WHERE p.Tipo_Estado = '$searchState'
             AND u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'
@@ -577,12 +617,11 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'
@@ -598,12 +637,11 @@ class FilterSearchClass{
           
            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'";
@@ -618,12 +656,11 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'";
          //FILTRO POR NOMBRE
@@ -636,12 +673,11 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'";
         
         //FILTRO POR APELLIDO,CIUDAD, DEPARTAMENTO,ESTADO Y RAZON
@@ -654,14 +690,13 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Tipo_Estado = '$searchState'
-            AND ep.Razon_Estado = '$searchReason'
+            WHERE p.Tipo_Estado = '$searchState'
+            AND p.Razon_Estado = '$searchReason'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'
             AND dp.Nombre_Departamento = '$searchDepartment'";
@@ -676,14 +711,13 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Tipo_Estado = '$searchState'
-            AND ep.Razon_Estado = '$searchReason'
+            WHERE p.Tipo_Estado = '$searchState'
+            AND p.Razon_Estado = '$searchReason'
             AND l.Nombre_Municipio = '$searchCiudad'
             AND dp.Nombre_Departamento = '$searchDepartment'";
         
@@ -697,14 +731,13 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Tipo_Estado = '$searchState'
-            AND ep.Razon_Estado = '$searchReason'
+            WHERE p.Tipo_Estado = '$searchState'
+            AND p.Razon_Estado = '$searchReason'
             AND dp.Nombre_Departamento = '$searchDepartment'";
         // FILTRO POR ESTADO Y RAZON
         }else if(empty($searchNameUser) 
@@ -716,14 +749,13 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Tipo_Estado = '$searchState'
-            AND ep.Razon_Estado = '$searchReason'";
+            WHERE p.Tipo_Estado = '$searchState'
+            AND p.Razon_Estado = '$searchReason'";
         //FILTRO POR RAZON
         }else if(empty($searchNameUser) 
         && empty($searchApellido) 
@@ -733,13 +765,12 @@ class FilterSearchClass{
         && !empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Razon_Estado = '$searchReason'";
+            WHERE p.Razon_Estado = '$searchReason'";
         //FILTRO POR ESTADO
         }else if(empty($searchNameUser) 
         && empty($searchApellido) 
@@ -749,13 +780,12 @@ class FilterSearchClass{
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
-            WHERE ep.Tipo_Estado = '$searchState'";
+            WHERE p.Tipo_Estado = '$searchState'";
         //FILTRO POR DEPARTAMENTO
         }else if(empty($searchNameUser) 
         && empty($searchApellido) 
@@ -765,12 +795,11 @@ class FilterSearchClass{
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE dp.Nombre_Departamento = '$searchDepartment'";
         //FILTRO POR CIUDAD
         }else if(empty($searchNameUser) 
@@ -781,12 +810,11 @@ class FilterSearchClass{
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE l.Nombre_Municipio = '$searchCiudad'";
         //FILTRO POR APELLIDO
         }else if(empty($searchNameUser) 
@@ -797,12 +825,11 @@ class FilterSearchClass{
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
             WHERE u.Apellidos_Usuario LIKE '$searchApellido%'";
 
             // FILTRO POR EMAIL
@@ -816,12 +843,11 @@ class FilterSearchClass{
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
             dp.Nombre_Departamento,l.Nombre_Municipio,
-            p.Detalles_PQRS,ep.Razon_Estado,ep.Tipo_Estado
+            p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
-            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
-            JOIN estado_pqrs ep ON p.Id_PQRS = ep.Id_PQRS 
+            JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario  
             WHERE u.Id_Usuario = '$searchId'";
 
         }
@@ -1122,14 +1148,15 @@ class FilterSearchClass{
         && !empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE p.Estado_Pedido = '$searchState'
             AND u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
@@ -1139,7 +1166,7 @@ class FilterSearchClass{
 
 
             $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
-            ,dp.Precio_Producto,p.Id_Pedido
+            ,dp.Precio_Producto,p.Id_Pedido,pd.Imagen_Producto 
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
             JOIN pedidos p ON p.Id_Pedido = dp.Id_Pedido
@@ -1161,14 +1188,16 @@ class FilterSearchClass{
         && empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'
@@ -1177,7 +1206,7 @@ class FilterSearchClass{
 
 
             
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1199,19 +1228,21 @@ class FilterSearchClass{
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
             sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario,en.Fecha_Entrega,pg.Tipo_Pago ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'
             GROUP BY p.Id_Pedido";
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1231,20 +1262,22 @@ class FilterSearchClass{
         && empty($searchState)){
           
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             GROUP BY p.Id_Pedido";
 
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1263,18 +1296,20 @@ class FilterSearchClass{
         && empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE u.Nombre_Usuario LIKE '$searchNameUser%'
             GROUP BY p.Id_Pedido";
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1290,21 +1325,23 @@ class FilterSearchClass{
         && !empty($searchDepartment)
         && !empty($searchState)){
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
-            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago 
             WHERE p.Estado_Pedido = '$searchState'
             AND u.Apellidos_Usuario LIKE '$searchApellido%'
             AND l.Nombre_Municipio = '$searchCiudad'
             AND dep.Nombre_Departamento = '$searchDepartment'
             GROUP BY p.Id_Pedido";
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1325,20 +1362,22 @@ class FilterSearchClass{
         && !empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE p.Estado_Pedido = '$searchState'
             AND l.Nombre_Municipio = '$searchCiudad'
             AND dep.Nombre_Departamento = '$searchDepartment'
             GROUP BY p.Id_Pedido";
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1358,19 +1397,21 @@ class FilterSearchClass{
         && empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE l.Nombre_Municipio = '$searchCiudad'
             AND dep.Nombre_Departamento = '$searchDepartment'
             GROUP BY p.Id_Pedido";
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
@@ -1389,18 +1430,20 @@ class FilterSearchClass{
         && !empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
+             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
             FROM pedidos p 
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
             JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
             JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
             JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE p.Estado_Pedido = '$searchState'
             GROUP BY p.Id_Pedido";
 
-            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Id_Producto,dp.Cantidad_Producto
+            $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
             FROM productos pd
             JOIN detalle_pedidos dp ON pd.Id_Producto = dp.Id_Producto
