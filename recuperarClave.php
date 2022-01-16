@@ -16,8 +16,11 @@ $conDb = $objConectar->getConnection();
 // $entityBody = json_decode(file_get_contents('php://input'), true);
 
 switch ($case) {
+    
     case 'claveTemporal':
-       
+        ini_set("SMTP","ssl://smtp.gmail.com");
+        ini_set("smtp_port","587");
+
         //Generando clave aleatoria
         $logitudPass = 5;
         $miPassword  = substr( md5(microtime()), 1, $logitudPass);
@@ -30,7 +33,7 @@ switch ($case) {
         $cantidadConsulta   = mysqli_num_rows($queryconsulta);
         $dataConsulta       = mysqli_fetch_array($queryconsulta);
        
-        if($cantidadConsulta == 0){ 
+        if($cantidadConsulta == 0){     
             $item = array("response"=>"no found user");
         }else{
            
@@ -140,7 +143,7 @@ switch ($case) {
             $headers .= "Return-path:"; 
             $headers .= "Cc:"; 
             $headers .= "Bcc:"; 
-            (@mail($destinatario,$asunto,$cuerpo,$headers));
+            (mail($destinatario,$asunto,$cuerpo,$headers));
 
             
 

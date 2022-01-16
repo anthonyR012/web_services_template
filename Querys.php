@@ -190,15 +190,14 @@ switch ($case) {
 			}
 			break;
 
-			case "productosOfertas":
-				$sql="SELECT po.Id_Produc_Ofert,po.Precio_Produc_Ofert,
-				po.Porcen_Oferta,po.Cant_Product_Ofert,po.Garantia_Product_Ofert,
-				p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,
+			case "productosOfertas": 
+				$sql="SELECT po.Id_Produc_Ofert,o.Porc_Oferta,o.Precio_Oferta,
+				p.Nombre_Producto,p.Marca_Producto,p.Ref_Producto,p.Garantia_Producto,
 				p.Descripcion_Producto,p.Precio_Producto,p.Imagen_Producto,
 				o.Caracteristicas_oferta,o.Fecha_Inicio,o.Fecha_Fin,o.Tipo_de_Oferta
 				FROM productos p
 				JOIN productos_ofertas po ON p.Id_Producto = po.Id_Producto
-				JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta";
+				JOIN ofertas o ON o.Id_Oferta = po.Id_Oferta LIMIT 5";
 	
 				$result = $conDb->prepare($sql);
 				$result->execute();
@@ -206,13 +205,13 @@ switch ($case) {
 				while($row =$result ->fetch(PDO::FETCH_ASSOC)){
 					$item =array(
 						"id" => $row["Id_Produc_Ofert"],
-						"porcentaje_oferta"=> $row["Porcen_Oferta"],
+						"porcentaje_oferta"=> $row["Porc_Oferta"],
 						"referencia"=> $row["Ref_Producto"],
 						"marca"=> $row["Marca_Producto"],
-						"garantia"=> $row["Garantia_Product_Ofert"],
-						"precio_oferta"=> $row["Precio_Produc_Ofert"],
-						"precio_original" => $row["Nombre_Producto"],
-						"nombre" => $row["Precio_Producto"],
+						"garantia"=> $row["Garantia_Producto"],
+						"precio_oferta"=> $row["Precio_Oferta"],
+						"precio_original" => $row["Precio_Producto"],
+						"nombre" => $row["Nombre_Producto"],
 						"descripcion_producto" => $row["Descripcion_Producto"],
 						"tipo" => $row["Tipo_de_Oferta"],
 						"fecha_inicio" =>$row["Fecha_Inicio"],
