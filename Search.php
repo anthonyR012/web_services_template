@@ -66,7 +66,7 @@ switch ($case) {
 
 
 		break;
-
+	
 	case "usuarios":
 
 		$sql = $implement->verifiedParamUsers(
@@ -332,11 +332,13 @@ switch ($case) {
 			$result->execute();
 
 			if ($result->rowCount() > 0) {
+
 			while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				$item = array(
 					"id" => $row["Id_PQRS"],
 					"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
 					"detalle" => $row["Detalles_PQRS"],
+					"correo" => $row["Email_Usuario"],
 					"estado" => $row["Razon_Estado"],
 					"razon" => $row["Tipo_Estado"]
 	
@@ -428,20 +430,21 @@ switch ($case) {
 
 					$item = array(
 						"id" => $id_pedido,
-						"estado" => $row["Estado_Pedido"],
 						"localidad"=> $row["Nombre_Municipio"],
-						"usuario" => $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
-						"id_usuario" => $row["Id_Usuario"],
+						"estado"=> $row["Estado_Pedido"],
+						"usuario"=> $row["Nombre_Usuario"] . " " . $row["Apellidos_Usuario"],
+						"id_usuario"=> $row["Id_Usuario"],
 						"direccion"=> $row["Direccion_Usuario"],
-						"fecha_pedido" => $row["Fecha_Pedido"],
+						"tomado_en"=> $row["Fecha_Pedido"],
+						"entregar_en"=> $row["Fecha_Entrega"],
 						"pago"=> $row["Tipo_Pago"],
-						"cantidad_productos" => $row["cantidad_productos"],
-						"total_a_pagar" => $row["Valor_Total"],
+						"cantidad_productos"=> $row["cantidad_productos"],
+						"total_a_pagar"=> $row["Valor_Total"],
 
 					);
 					
 					
-					$sql2 = "SELECT p.Nombre_Producto,p.Id_Producto,dp.Cantidad_Producto
+					$sql2 = "SELECT p.Nombre_Producto,p.Id_Producto,dp.Cantidad_Producto,p.Imagen_Producto
 					,dp.Precio_Producto,pd.Id_Pedido
 					FROM productos p
 					JOIN detalle_pedidos dp ON p.Id_Producto = dp.Id_Producto
@@ -459,10 +462,11 @@ switch ($case) {
 							"nombre_producto" => $row["Nombre_Producto"],
 							"cantidad_producto" => $row["Cantidad_Producto"],
 							"precio_producto" => $row["Precio_Producto"],
-	
+							"imagen_producto" => $row["Imagen_Producto"],
+							
 						);
 
-					$item["response"][] = $itemDetail;
+					$item["productos"][] = $itemDetail;
 					}
 
 					$json['response'][] = $item;
@@ -496,6 +500,7 @@ switch ($case) {
 						"id_usuario" => $row["Id_Usuario"],
 						"fecha_pedido" => $row["Fecha_Pedido"],
 						"tomado_en"=> $row["Fecha_Pedido"],
+						"direccion"=> $row["Direccion_Usuario"],
 						"entregar_en"=> $row["Fecha_Entrega"],
 						"pago"=> $row["Tipo_Pago"],
 						"cantidad_productos" => $row["cantidad_productos"],

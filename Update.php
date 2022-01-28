@@ -49,6 +49,21 @@ switch ($case) {
 		}
 		
 		break;
+	case "entregado":
+		if(!empty($_GET["id"])){
+			$sql = $conDb->prepare("UPDATE `pedidos` SET `Estado_Pedido` = 'Finalizado' WHERE `pedidos`.`Id_Pedido` = :id");
+	   
+			$sql->bindParam(':id', $_GET["id"]);
+				$result = $sql->execute();
+			   
+			if($result){
+				$item = array("response"=>"update complete");
+				$json['response'][]=$item;
+				
+			}
+		}
+			
+	break;	
     
 	case "perfil":
 		

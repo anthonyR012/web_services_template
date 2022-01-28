@@ -3,7 +3,6 @@
 <?php
 include_once('Conexion.php');
 include_once('class/SecurityPassClass.php');
-include('config.php');
 
 header('Access-Control-Allow-Origin: *');
 $case = $_POST["case"];
@@ -18,8 +17,14 @@ $conDb = $objConectar->getConnection();
 switch ($case) {
     
     case 'claveTemporal':
-        ini_set("SMTP","ssl://smtp.gmail.com");
-        ini_set("smtp_port","587");
+        // Please specify your Mail Server - Example: mail.example.com.
+    ini_set("SMTP","mail.gmail.com");
+
+    // Please specify an SMTP Number 25 and 8889 are valid SMTP Ports.
+    ini_set("smtp_port","25");
+
+    // Please specify the return address to use
+    ini_set('sendmail_from', 'rubionn27@gmail.com');
 
         //Generando clave aleatoria
         $logitudPass = 5;
@@ -28,16 +33,20 @@ switch ($case) {
 
         $correo             = trim($_REQUEST['email']); //Quitamos algun espacion en blanco
        
-        $consulta           = ("SELECT * FROM usuarios WHERE Email_Usuario ='".$correo."'");
-        $queryconsulta      = mysqli_query($con, $consulta);
-        $cantidadConsulta   = mysqli_num_rows($queryconsulta);
-        $dataConsulta       = mysqli_fetch_array($queryconsulta);
-       
-        if($cantidadConsulta == 0){     
+        $consulta    = ("SELECT * FROM usuarios WHERE Email_Usuario ='".$correo."'");
+        
+        $result = $conDb->prepare($consulta);
+
+    
+        if(!$result->execute()){     
             $item = array("response"=>"no found user");
         }else{
-           
-        $updateClave    = ("UPDATE usuarios SET Password_Usuario='$clave' WHERE Email_Usuario='".$correo."' ");
+      
+        $dataConsulta = $result ->fetch(PDO::FETCH_ASSOC);
+        $hash = new SecurityPassClass($clave);
+		$getHash = $hash->hash();
+
+        $updateClave    = ("UPDATE usuarios SET Password_Usuario='$getHash' WHERE Email_Usuario='".$correo."' ");
         $queryResult    = mysqli_query($con,$updateClave); 
       
         $destinatario = $correo; 
@@ -118,7 +127,7 @@ switch ($case) {
             <tr>
                 <td style="background-color: #ffffff;">
                     <div class="misection">
-                        <h2 style="color: red; margin: 0 0 7px">Hola, '.$dataConsulta['Nombre_Usuario'].'</h2>
+                        <h2 style="color: red; margin: 0 0 7px">Hola, '.$dataConsulta['Nombre_Usuario'].' '.$dataConsulta['Apellidos_Usuario'] .'</h2>
                         <p style="margin: 2px; font-size: 18px">Te hemos creado una nueva clave temporal para que puedas iniciar sesión, la clave temporal es: <strong>'.$clave.'</strong> </p>
                         <p>&nbsp;</p>
                         <p>Ingresa y modificala para que sigas disfrutando de nuestros servicios</p>

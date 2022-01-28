@@ -764,7 +764,7 @@ class FilterSearchClass{
         && empty($searchState)
         && !empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -786,6 +786,7 @@ class FilterSearchClass{
             JOIN departamentos dp ON dp.Id_Departamento = l.Id_Departamento
             JOIN pqrs p ON p.Id_Usuario = u.Id_Usuario 
             WHERE p.Tipo_Estado = '$searchState'";
+
         //FILTRO POR DEPARTAMENTO
         }else if(empty($searchNameUser) 
         && empty($searchApellido) 
@@ -1430,18 +1431,20 @@ class FilterSearchClass{
         && !empty($searchState)){
 
             $sql = "SELECT DISTINCT p.Id_Pedido,p.Estado_Pedido,p.Fecha_Pedido, 
-            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,en.Fecha_Entrega,pg.Tipo_Pago ,
-             u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio 
-            FROM pedidos p 
+            sum(dp.Cantidad_Producto) as cantidad_productos ,p.Valor_Total,
+            u.Nombre_Usuario,u.Apellidos_Usuario,u.Id_Usuario ,u.Direccion_Usuario,l.Nombre_Municipio,en.Fecha_Entrega,pg.Tipo_Pago 
+            FROM pedidos p  
             JOIN usuarios u ON u.Id_Usuario = p.Id_Usuario 
-            JOIN localidad l ON l.Id_localidad = u.Id_localidad
-            JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
-            JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
-            JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
-            JOIN envios en ON en.Id_Pedido = p.Id_Pedido
-			JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
+                JOIN localidad l ON l.Id_localidad = u.Id_localidad
+                JOIN departamentos dep ON dep.Id_Departamento =  l.Id_Departamento
+                JOIN detalle_pedidos dp ON dp.Id_Pedido = p.Id_Pedido 
+                JOIN productos pd ON pd.Id_Producto = dp.Id_Producto 
+                JOIN envios en ON en.Id_Pedido = p.Id_Pedido
+                JOIN pagos pg ON pg.Id_Pago = en.Id_Pago
             WHERE p.Estado_Pedido = '$searchState'
             GROUP BY p.Id_Pedido";
+
+                
 
             $this->sqlProductPedidos ="SELECT pd.Nombre_Producto,pd.Imagen_Producto,pd.Id_Producto,dp.Cantidad_Producto
             ,dp.Precio_Producto,p.Id_Pedido
