@@ -132,7 +132,27 @@ switch ($case) {
 		 
 			
 		break;
-
+		
+		case "edicionPQRS":
+			$ide = $_GET["Id_PQRS"];
+			 if(!empty($_GET["Id_PQRS"])){
+	
+					$sql = $conDb->prepare("UPDATE pqrs SET Detalles_PQRS = :descripcion, Tipo_Estado = :Tipo WHERE Id_PQRS = $ide");
+			   
+				
+					  $sql->bindParam(':descripcion', $_GET["Detalles_PQRS"]);
+					  $sql->bindParam(':Tipo', $_GET["Tipo_Estado"]);
+					// $sql->bindParam(':id', $_GET["Id_PQRS"]);
+					$result = $sql->execute();
+				   
+					if($result){
+						$item = array("response"=>"Update complete");
+						$json['response'][]=$item;
+						
+					}
+				 }
+				
+				break;
 
 
 

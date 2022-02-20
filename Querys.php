@@ -495,6 +495,29 @@ switch ($case) {
 					//IMPRIMIMOS OBJETO JSON
 					}
 	break;
+
+	case "editarpqrs":
+
+		// $id=$_GET["id"];
+
+		$sql="SELECT * FROM pqrs WHERE Id_PQRS = $_GET[Id_PQRS]";
+
+		$result = $conDb->prepare($sql);
+		$result->execute();
+
+		while($row =$result ->fetch(PDO::FETCH_ASSOC)){
+			$item =array(
+				"id" => $row["Id_PQRS"],
+				"detalle" => $row["Detalles_PQRS"],
+				"razon" => $row["Razon_Estado"],
+				"estado" =>$row["Tipo_Estado"]
+				
+			);
+			//AGREGAMOS AL ARRAY LOS DATOS ITERADOS
+			$json['response'][]=$item;
+			//IMPRIMIMOS OBJETO JSON
+		}
+		break;
 		
 			
 

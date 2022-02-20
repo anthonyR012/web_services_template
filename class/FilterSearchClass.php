@@ -573,7 +573,7 @@ class FilterSearchClass{
         && !empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-		dp.Nombre_Departamento,l.Nombre_Municipio,
+		dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
 		p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
 		FROM usuarios u 
 		JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -595,7 +595,7 @@ class FilterSearchClass{
         && empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -616,7 +616,7 @@ class FilterSearchClass{
         && empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -636,7 +636,7 @@ class FilterSearchClass{
         && empty($searchReason)){
           
            $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -655,7 +655,7 @@ class FilterSearchClass{
         && empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -672,7 +672,7 @@ class FilterSearchClass{
         && empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -689,7 +689,7 @@ class FilterSearchClass{
         && !empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -710,7 +710,7 @@ class FilterSearchClass{
         && !empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -730,7 +730,7 @@ class FilterSearchClass{
         && !empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -748,7 +748,7 @@ class FilterSearchClass{
         && !empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -779,7 +779,7 @@ class FilterSearchClass{
         && !empty($searchState)
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -795,7 +795,7 @@ class FilterSearchClass{
         && empty($searchState)
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -810,7 +810,7 @@ class FilterSearchClass{
         && empty($searchState)
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -825,7 +825,7 @@ class FilterSearchClass{
         && empty($searchState)
         && empty($searchReason)){
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad
@@ -843,7 +843,7 @@ class FilterSearchClass{
         && empty($searchReason)){
 
             $sql = "SELECT p.Id_PQRS, u.Nombre_Usuario,u.Apellidos_Usuario,
-            dp.Nombre_Departamento,l.Nombre_Municipio,
+            dp.Nombre_Departamento,l.Nombre_Municipio,u.Email_Usuario,
             p.Detalles_PQRS,p.Razon_Estado,p.Tipo_Estado
             FROM usuarios u 
             JOIN localidad l ON l.Id_localidad = u.Id_localidad

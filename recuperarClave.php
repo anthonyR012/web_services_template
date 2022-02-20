@@ -44,11 +44,13 @@ switch ($case) {
       
         $dataConsulta = $result ->fetch(PDO::FETCH_ASSOC);
         $hash = new SecurityPassClass($clave);
+        
 		$getHash = $hash->hash();
-
+        
         $updateClave    = ("UPDATE usuarios SET Password_Usuario='$getHash' WHERE Email_Usuario='".$correo."' ");
-        $queryResult    = mysqli_query($con,$updateClave); 
-      
+       
+        $queryResult    = $conDb->prepare($updateClave); 
+        $queryResult->execute();
         $destinatario = $correo; 
         $asunto       = "Recuperando Clave - Tienda Online";
         $cuerpo = '
@@ -111,6 +113,20 @@ switch ($case) {
             .mb-5{
                 margin-bottom:50px;
             }
+            .headerCss{
+                background-color: #E1A932;
+            }
+
+            .title{
+                margin: 15px;
+                font-family: fantasy;
+                padding: 20px;
+
+            }
+            .lista{
+                font-size: 18px;
+                margin-top: 15px;
+            }
             </style>
         ';
 
@@ -118,19 +134,23 @@ switch ($case) {
         </head>
         <body>
             <div class="contenedor">
-            <h1>Recuperación de cuenta Tienda Online</h1>
-                <p>&nbsp;</p>
-                <p>&nbsp;</p>
-            <table style="max-width: 600px; padding: 10px; margin:0 auto; border-collapse: collapse;">
-        
+            <div class="headerCss">
+            <h1 class="title">Buyme Ecommerce</h1>
             
+            </div style = "background:#F0D9A8">
+
+            <table style="max-width: 600px; padding: 10px; margin:0 auto; border-collapse: collapse;">
+            
+              
             <tr>
                 <td style="background-color: #ffffff;">
                     <div class="misection">
-                        <h2 style="color: red; margin: 0 0 7px">Hola, '.$dataConsulta['Nombre_Usuario'].' '.$dataConsulta['Apellidos_Usuario'] .'</h2>
-                        <p style="margin: 2px; font-size: 18px">Te hemos creado una nueva clave temporal para que puedas iniciar sesión, la clave temporal es: <strong>'.$clave.'</strong> </p>
+                        <h2 style="margin: 0 0 7px">Hola, '.$dataConsulta['Nombre_Usuario'].' '.$dataConsulta['Apellidos_Usuario'] .'</h2>
+                        <p style="margin: 2px; font-size: 18px"> Para la recuperación de tu cuenta te hemos generado una nueva clave temporal para que puedas iniciar sesión.</p>
+                        <li class="lista">Clave temporal: <strong>'.$clave.'</strong></li>
                         <p>&nbsp;</p>
                         <p>Ingresa y modificala para que sigas disfrutando de nuestros servicios</p>
+                     
                         <p>&nbsp;</p>                
                         <p>&nbsp;</p>               
                     </div>
