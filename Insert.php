@@ -62,6 +62,53 @@ switch ($case) {
 			
 		}
 			break;
+
+			
+	case "ofertarProductos":
+		
+		if(!empty($_GET["Tipo_de_Oferta"]) 
+		&& !empty($_GET["Caracteristicas_oferta"])  
+		&& !empty($_GET["Fecha_Inicio"])  
+		&& !empty($_GET["Fecha_Fin"])
+		&& !empty($_GET["Porc_Oferta"])
+		&& !empty($_GET["Precio_Oferta"])   
+		&& !empty($_GET["Cantidad_Oferta"])
+		&& !empty($_GET["Id_Producto"])){
+			
+				
+			$sql = $conDb->prepare("INSERT INTO ofertas
+			 (Id_Oferta,Tipo_de_Oferta, Caracteristicas_oferta,Fecha_Inicio,Fecha_Fin, 
+			 Porc_Oferta,Precio_Oferta,Cantidad_Oferta,Id_Producto) VALUES (NULL,:tipo, :caracteristicas, :fechaI, :fechaF, :porcentaje,:precioOferta,:cantidadOf,
+			:idProducto)");
+
+
+
+		
+			
+			$sql->bindParam(':tipo',$_GET["Tipo_de_Oferta"]);
+			$sql->bindParam(':caracteristicas', $_GET["Caracteristicas_oferta"]);
+			$sql->bindParam(':fechaI', $_GET["Fecha_Inicio"]);
+			$sql->bindParam(':fechaF', $_GET["Fecha_Fin"]);
+			$sql->bindParam(':porcentaje', $_GET["Porc_Oferta"]);
+			$sql->bindParam(':precioOferta', $_GET["Precio_Oferta"]);
+			$sql->bindParam(':cantidadOf', $_GET["Cantidad_Oferta"]);
+			$sql->bindParam(':idProducto', $_GET["Id_Producto"]);
+			
+		
+		
+			 
+			
+			$result= $sql->execute();
+
+			 if($result){
+				$item = array("response"=>"insert complete");
+				$json['response'][]=$item;
+				
+			}
+			
+		}
+
+		break;
 	case "oferta":
 		
 		if(!empty($_GET["nombre"]) 

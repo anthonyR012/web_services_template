@@ -66,6 +66,39 @@ switch ($case) {
 
 
 		break;
+		case "misProductos":	
+			$id=$_GET['id'];
+
+		$sql = 'SELECT pd.* FROM productos_proveedores pp 
+	JOIN productos pd ON pp.Id_Producto = pd.Id_Producto
+	JOIN usuarios u ON u.Id_Usuario = pp.Id_Proveedor
+	WHERE u.Id_Usuario='.$id;
+
+		$result = $conDb->prepare($sql);
+		$result->execute();
+		
+			
+			while($row = $result->fetch(PDO::FETCH_ASSOC)){
+		
+					$item=array(
+					"id" => $row["Id_Producto"],
+					"Nombre"=> $row["Nombre_Producto"],
+					"Marca" => $row["Marca_Producto"],
+					"Referencia" => $row["Ref_Producto"],
+					"Descripcion" => $row["Descripcion_Producto"],
+					"Precio" => $row["Precio_Producto"],
+					"Existencias" => $row["Existencia_Producto"],
+					"Imagen" => $row["Imagen_Producto"],
+					"Garantia" => $row["Garantia_Producto"],
+				
+					);
+					$json['response'][]=$item;
+			}
+
+		
+
+		 break;
+		 
 	
 	case "usuarios":
 
