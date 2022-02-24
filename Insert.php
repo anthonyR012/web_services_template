@@ -20,15 +20,22 @@ switch ($case) {
 		&& !empty($_GET["descripcion"])
 		&& !empty($_GET["precio"])  
 		&& !empty($_GET["existencia"])
-		&& !empty($entityBody["imagen"])  
+		&& !empty($entityBody["imagen"])  || !empty($_POST["imagen"])
 		&& !empty($_GET["garantia"])
 		&& !empty($_GET["categoria"])
 		&& !empty($_GET["id_proveedor"])){
-			
+
 			$path = "img/".$_GET['referencia'].".jpg";
 		    $url = "http://localhost/webservice/$path";
-		     file_put_contents($path,base64_decode($entityBody["imagen"]));
-		      $bytes = file_get_contents($path);
+
+			if(!empty($entityBody["imagen"])){
+				file_put_contents($path,base64_decode($entityBody["imagen"]));
+				$bytes = file_get_contents($path);
+			}else{
+				file_put_contents($path,base64_decode($_POST["imagen"]));
+				$bytes = file_get_contents($path);
+			}
+		    
 
 			$sql = $conDb->prepare("INSERT INTO productos (Id_Producto, Nombre_Producto, Marca_Producto, Ref_Producto, Descripcion_Producto, Precio_Producto, Existencia_Producto,Imagen_Producto, Garantia_Producto, Id_Categoria,Id_Proveedor) VALUES (NULL, :nombre, :marca, :referencia, :descripcion, :precio, :existencia,:imagen, :garantia,:categoria,:id_proveedor)");
 
