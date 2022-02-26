@@ -3,7 +3,7 @@ class FilterSearchClass{
     private $sqlProductProveedor;
     private $sqlProductPedidos;
     public function verifiedParamProduct($searchName,$searchPriceMenor,
-    $searchPriceMayor,$searchCategory,$searchBrand,$searchOfert){
+    $searchPriceMayor,$searchCategory,$searchBrand,$searchOfert,$searchId){
 
         $sql = "";
         //FILTRO POR TODOS
@@ -182,6 +182,17 @@ class FilterSearchClass{
             JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
             WHERE p.Marca_Producto like '%$searchBrand%' 
             AND c.Nombre_Categoria like '%$searchCategory%'";
+        
+        }else if(empty($searchName)
+        && empty($searchPriceMenor) 
+        && empty($searchPriceMayor) 
+        && empty($searchCategory) 
+        && empty($searchBrand)
+        && !empty($searchId)){
+            
+            $sql = "SELECT p.*,c.Nombre_Categoria FROM productos p
+            JOIN categorias_productos c ON p.Id_Categoria = c.Id_Categoria
+            WHERE p.Id_Producto = $searchId";
         
         }
 
@@ -1655,7 +1666,7 @@ class FilterSearchClass{
         return $sql;
 
     }
-    public function verifiedParamComentarios($searchNameUser,$searchApellido,$searchDate){
+    public function verifiedParamComentarios($searchNameUser,$searchApellido,$searchDate,$searchId){
 
         $sql="";
         //FILTRO POR TODO
@@ -1704,6 +1715,16 @@ class FilterSearchClass{
             JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
             JOIN productos p ON p.Id_Producto = c.Id_Producto
             WHERE c.Fecha_Comentario = '$searchDate'";
+        }else if(empty($searchNameUser)
+        && empty($searchApellido)
+        && empty($searchDate)
+        && !empty($searchId)){
+            $sql = "SELECT C.*,P.Nombre_Producto,P.Marca_Producto,U.Nombre_Usuario,U.Apellidos_Usuario FROM comentarios c 
+            JOIN usuarios u ON c.Id_Usuario = u.Id_Usuario
+            JOIN productos p ON p.Id_Producto = c.Id_Producto
+            WHERE p.Id_Producto = $searchId";
+
+            
         }
 
         return $sql;

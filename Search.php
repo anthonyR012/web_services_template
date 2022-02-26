@@ -30,7 +30,8 @@ switch ($case) {
 			!empty($_GET["searchPMayor"]) ? $_GET["searchPMayor"] : null,
 			!empty($_GET["searchCategory"]) ? $_GET["searchCategory"] : null,
 			!empty($_GET["searchBrand"]) ? $_GET["searchBrand"] : null,
-			!empty($_GET["searchOfert"]) ? $_GET["searchOfert"] : null
+			!empty($_GET["searchOfert"]) ? $_GET["searchOfert"] : null,
+			!empty($_GET["searchId"]) ? $_GET["searchId"] : null
 		);
 
 		
@@ -611,12 +612,14 @@ switch ($case) {
 		}
 		
 		break;
+		
 		case "comentarios":
 
 			$sql = $implement->verifiedParamComentarios(
 				!empty($_GET["searchName"]) ? $_GET["searchName"] : null,
 				!empty($_GET["searchApellido"]) ? $_GET["searchApellido"] : null,
 				!empty($_GET["searchFecha"]) ? $_GET["searchFecha"] : null,
+				!empty($_GET["searchId"]) ? $_GET["searchId"] : null,
 			);
 	
 			if(!empty($sql)){
