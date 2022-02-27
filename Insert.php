@@ -26,7 +26,7 @@ switch ($case) {
 		&& !empty($_GET["id_proveedor"])){
 
 			$path = "img/".$_GET['referencia'].".jpg";
-		    $url = "http://localhost/webservice/$path";
+		    $url = "https://buyme.hotmarketing.info/WebServices/$path";
 
 			if(!empty($entityBody["imagen"])){
 				file_put_contents($path,base64_decode($entityBody["imagen"]));
