@@ -305,6 +305,43 @@ case "pedidos":
 		}
 	
 		break;	
+		case "envios":
+
+			$id_lastpedido = "SELECT COUNT(*) FROM pedidos";
+			$resId_last = $conDb->prepare($id_lastpedido);
+			$resId_last->execute();        
+			$count = $resId_last->fetchColumn();					
+			$idNewpedido = ($count+1);		
+
+
+			$cobertura = "Local";
+			$fecha =$_GET["fecha"];
+			$idPago = $_GET["idPago"];
+
+
+
+			$sql = $conDb->prepare("INSERT INTO `envios` (`Id_Envio`, `Cobertura`, `Fecha_Entrega`, `Id_Pedido`, `Id_Pago`) VALUES (NULL, :cobertura, :fecha, :idPedido, :idPago)");
+		
+			$sql->bindParam(':cobertura', $cobertura);
+			$sql->bindParam(':fecha', $fecha);
+			$sql->bindParam(':idPedido', $idNewpedido);
+			$sql->bindParam(':idPago',$idPago);
+
+		
+			$result = $sql->execute();		
+			
+	
+				
+				if($result){				
+		
+					$item = array("response"=>"insert complete");
+					$json['response'][]=$item;
+					
+				}
+				
+			
+		
+			break;	
 
 		case "comentarios":
 		
