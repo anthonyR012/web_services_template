@@ -4,8 +4,8 @@ class Conectar{
 
 	private $name = "buyme";
 	private $host = "localhost";
-	private $user = "rubioAdminStore";
-	private $passUser = "sI9Y5xTfSWm065WO";
+	private $user = "root";
+	private $passUser = "";
 
 	public function getConnection(){
 		try{

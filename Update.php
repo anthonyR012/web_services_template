@@ -153,6 +153,25 @@ switch ($case) {
 				 }
 				
 				break;
+				case "cambioPQRS":
+					$pq = $_GET["Id_PQRS"];
+					 if(!empty($_GET["Id_PQRS"])){
+			
+							$sql = $conDb->prepare("UPDATE pqrs SET Razon_Estado = 'Respondido' WHERE Id_PQRS = $pq");
+					   
+						
+							  
+							// $sql->bindParam(':id', $_GET["Id_PQRS"]);
+							$result = $sql->execute();
+						   
+							if($result){
+								$item = array("response"=>"Envio correo complete");
+								$json['response'][]=$item;
+								
+							}
+						 }
+						
+						break;
 
 
 

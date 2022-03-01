@@ -241,6 +241,94 @@ switch ($case) {
 
 	break;
 
+	/* POOLL */
+case "pedidos":
+		
+	if(!empty($_GET["Estado_Pedido"])	
+	&& !empty($_GET["Valor_Total"])		
+	&& !empty($_GET["Id_Usuario"])){
+		
+	/*$fecha = date ( 'd-m-Y' );*/
+		$sql = $conDb->prepare("INSERT INTO pedidos (Id_Pedido, Fecha_Pedido, Estado_Pedido, Valor_Total, Id_Usuario) VALUES (NULL, NOW(), :estado, :valor, :id_Usuario)");
+
+				
+		/*$sql->bindParam(':fecha', $fecha);*/
+		$sql->bindParam(':estado', $_GET["Estado_Pedido"]);
+		$sql->bindParam(':valor', $_GET["Valor_Total"]);
+		$sql->bindParam(':id_Usuario', $_GET["Id_Usuario"]);
+		
+		 $result = $sql->execute();
+		
+		if($result){				
+
+			$item = array("response"=>"insert complete");
+			$json['response'][]=$item;
+			
+		}
+		
+	}
+
+	break;
+
+	case "detalle_pedidos":
+		
+		if(!empty($_GET["arrayProductos"])){
+			$datosProduct = $_GET["arrayProductos"];
+			$datosProductDeco = json_decode($datosProduct, true);
+						
+					$id_lastpedido = "SELECT COUNT(*) FROM pedidos";
+					$resId_last = $conDb->prepare($id_lastpedido);
+					$resId_last->execute();        
+					$count = $resId_last->fetchColumn();					
+					$idNewpedido = ($count+1);					
+
+			foreach ($datosProductDeco as $row) {
+				$idProducto = $row['id'];
+				$cantidadProducto = $row['cantidad'];
+				$precioProducto = $row['precio'];		
+
+				
+				$sql = $conDb->prepare("INSERT INTO detalle_pedidos (Id_Detalle, Id_Pedido, Id_Producto , Cantidad_Producto, Precio_Producto) VALUES (NULL, '$idNewpedido', '$idProducto', '$cantidadProducto', '$precioProducto')");			
+				
+					 $result = $sql->execute();					
+			 }
+
+
+			
+			if($result){				
+	
+				$item = array("response"=>"insert complete");
+				$json['response'][]=$item;
+				
+			}
+			
+		}
+	
+		break;	
+
+		case "comentarios":
+		
+			
+			$comentario = $_GET['comentario'];
+			$producto = $_GET['Id_producto'];
+			$usuario = $_GET['Id_usuario'];
+			$fecha = $_GET['fecha'];
+
+			$sql = $conDb->prepare("INSERT INTO comentarios (Descripcion_Comentario, Fecha_Comentario,Id_Producto,Id_Usuario) VALUES ('$comentario', '$fecha', $producto, $usuario)");
+
+		
+			$result = $sql->execute();
+
+			if($result){
+				$item = array("response"=>"insert complete");
+				$json['response'][]=$item;
+			}else{
+				echo "malo";
+			}
+
+
+		break;
+
 
 }
 
